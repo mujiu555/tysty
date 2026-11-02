@@ -218,6 +218,36 @@ API reference: [English](doc/README.api.en.md) · [简体中文](doc/README.api.
 // Keep page-producing entry calls outside another page's entry body.
 ```
 
+### Output previews
+
+#### Static site generation
+
+The generated site includes page navigation, breadcrumbs, section outlines, and reusable page content.
+
+| Home | Research | Review with reused research content |
+| --- | --- | --- |
+| ![SSG home page](doc/imgs/Screenshot%20from%202026-11-02%2011-41-26.png) | ![SSG research page with document tree and section outline](doc/imgs/Screenshot%20from%202026-11-02%2011-41-36.png) | ![SSG review page reusing the research page body](doc/imgs/Screenshot%20from%202026-11-02%2011-41-44.png) |
+
+#### PDF
+
+Document headings, metadata, navigation, nested notes, and tag listings in the PDF output.
+
+| Book | Note heading |
+| --- | --- |
+| ![PDF book heading and metadata](doc/imgs/Screenshot%20from%202026-11-02%2011-44-57.png) | ![PDF note heading](doc/imgs/Screenshot%20from%202026-11-02%2011-45-04.png) |
+
+| Note navigation | Nested note |
+| --- | --- |
+| ![PDF note with previous and next navigation](doc/imgs/Screenshot%20from%202026-11-02%2011-45-11.png) | ![PDF nested note with breadcrumbs and back link](doc/imgs/Screenshot%20from%202026-11-02%2011-45-21.png) |
+
+![PDF publication metadata and hierarchical tag listing](doc/imgs/Screenshot%20from%202026-11-02%2011-45-37.png)
+
+#### Single-file HTML
+
+The same notebook rendered as HTML, with a cover, automatic outline, and document navigation.
+
+![Single-file HTML notebook with cover, contents, and nested notes](doc/imgs/Screenshot%20from%202026-11-02%2011-46-37.png)
+
 ### UID identifiers
 
 `uid(namespace, name)` uses pure Typst FNV-1a 32 with native integer bit
