@@ -43,8 +43,8 @@
 #let _core_doc = record(
   "Metadata: [Core]",
   id: str,
-  parent_id: str,
-  file_path: str,
+  parent-id: str,
+  file-path: str,
 
   title: content,
   authors: array, // string names or author records; always an array

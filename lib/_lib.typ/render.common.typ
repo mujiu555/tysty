@@ -26,8 +26,8 @@
     if path.len() > limit {
       panic("Breadcrumb path exceeds rendered document count: " + doc.id)
     }
-    if node.parent_id == node.id { break }
-    node = docs.find(doc => doc.id == node.parent_id)
+    if node.parent-id == node.id { break }
+    node = docs.find(doc => doc.id == node.parent-id)
   }
   path.rev()
 }

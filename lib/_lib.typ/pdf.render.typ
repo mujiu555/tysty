@@ -65,10 +65,10 @@
   // Register outside the heading body: outlines replay that body.
   mkindex(doc.id, block(below: 0.3em, heading(
     depth: 1,
-    text(weight: 600, doc.title) + h(0.5em) + link((file_base.get)() + doc.file_path, _slug("[" + doc.id + "]")),
+    text(weight: 600, doc.title) + h(0.5em) + link((file_base.get)() + doc.file-path, _slug("[" + doc.id + "]")),
   )))
   let parts = _details(doc)
-  let parent-id = doc.parent_id
+  let parent-id = doc.parent-id
   if parent-id != doc.id and parent-id in entities() {
     parts.push(link(indexers().find(index => index.label == parent-id).loc, "[back]"))
   }
@@ -132,7 +132,7 @@
 
   let children = docs
     .filter(
-      d => d.parent_id == doc.id and d.id != doc.id and d.id in ids and entries.any(index => index.label == d.id),
+      d => d.parent-id == doc.id and d.id != doc.id and d.id in ids and entries.any(index => index.label == d.id),
     )
 
   if children.len() > 0 {

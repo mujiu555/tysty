@@ -34,8 +34,8 @@
   if pos != none and pos > 0 {
     links.push(link(entries.find(index => index.label == ids.at(pos - 1)).loc, [Previous]))
   }
-  if doc.parent_id != doc.id and entries.any(index => index.label == doc.parent_id) {
-    links.push(link(entries.find(index => index.label == doc.parent_id).loc, [Parent]))
+  if doc.parent-id != doc.id and entries.any(index => index.label == doc.parent-id) {
+    links.push(link(entries.find(index => index.label == doc.parent-id).loc, [Parent]))
   }
   if pos != none and pos + 1 < ids.len() {
     links.push(link(entries.find(index => index.label == ids.at(pos + 1)).loc, [Next]))
@@ -67,7 +67,7 @@
   let article = _element("article", "tysty-note", [
     #mkindex(doc.id, heading(depth: 1, [
       #doc.title
-      #_element("span", "tysty-note-id", link((file_base.get)() + doc.file_path, "[" + doc.id + "]"))
+      #_element("span", "tysty-note-id", link((file_base.get)() + doc.file-path, "[" + doc.id + "]"))
     ]))
     #_details(doc)
     #if not ssg { _navigation(doc) }
@@ -109,7 +109,7 @@
   let entries = indexers()
   let ids = entities()
   let children = documents().filter(d => (
-    d.parent_id == doc.id and d.id != doc.id and d.id in ids and entries.any(index => index.label == d.id)
+    d.parent-id == doc.id and d.id != doc.id and d.id in ids and entries.any(index => index.label == d.id)
   ))
   if children.len() > 0 {
     _element("section", "tysty-children", [

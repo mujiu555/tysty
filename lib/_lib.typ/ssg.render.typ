@@ -40,9 +40,9 @@
   while true {
     assert(node.id not in visited, message: "Cyclic parent while computing SSG route")
     visited.push(node.id)
-    if node.parent_id == node.id { break }
+    if node.parent-id == node.id { break }
     parts.insert(0, _slug(node.id))
-    node = docs.find(doc => doc.id == node.parent_id)
+    node = docs.find(doc => doc.id == node.parent-id)
   }
   if parts.len() == 0 { "index.html" } else { parts.join("/") + "/index.html" }
 }
@@ -59,7 +59,7 @@
 
 // A route-aware outline of all registered documents, grouped by parent.
 #let _outline-node(doc, docs, generated, source, active-id) = {
-  let children = docs.filter(child => child.parent_id == doc.id and child.id != doc.id)
+  let children = docs.filter(child => child.parent-id == doc.id and child.id != doc.id)
   let href = _relative-route(_document-route(doc), source)
   let attrs = (href: href) + if doc.id == active-id { (aria-current: "page") } else { (:) }
   let label = if doc.id in generated {
@@ -80,7 +80,7 @@
   let generated = entities()
   let active = (current.get)()
   let source = _document-route(active)
-  let roots = docs.filter(doc => doc.parent_id == doc.id)
+  let roots = docs.filter(doc => doc.parent-id == doc.id)
   html.elem("nav", attrs: (class: "tysty-site-outline", aria-label: "Site outline"), [
     #html.elem("h2", title)
     #html.elem("ul", roots.map(doc => _outline-node(doc, docs, generated, source, active.id)).join())
