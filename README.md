@@ -6,19 +6,24 @@
 
 ## Background
 
+Tysty is a library for organizing linked notes, inspired by Emacs Org-mode. It provides document metadata, tags, cross-references, outlines, and navigation. Render the same source as PDF, HTML, or a static website.
+
 ### Referencing
+
+<!-- Reserved for references to be documented. -->
 
 ### Credit: Code/Library
 
+<!-- Reserved for code and library acknowledgements to be documented. -->
+
 ## Structure
 
-The whole project is organized in following structure:
+The project is organized as follows:
 
 ```txt
 Root: /                         ; Project root
 +- .git/                        ; git repository
 +- doc/                         ; documentation & copyright information
-|  +- licenses/                 ; licenses and notice form other libraries
 |  +- LICENSE                   ; copy of the LICENSE
 |  +- LICENSE.apache            ; copy of the original LICENSE
 |  +- README                    ; README for directory `doc`
@@ -28,7 +33,6 @@ Root: /                         ; Project root
 +- lib/                         ; libraries
 |  +- _lib.typ/                 ; source code
 +- .gitignore
-+- .gitmodules
 +- LICENSE
 +- README.md
 +- typst.toml                   ; library spec
@@ -41,15 +45,14 @@ API reference: [English](doc/README.api.en.md) · [简体中文](doc/README.api.
 ```typst
 // Save this example as notebook.typ.
 // Compile with: typst compile --root . notebook.typ
-// Requires tysty 0.1.0 installed in the local package namespace.
-#import "@local/tysty:0.1.0": *
+// Requires Typst 0.15.1 or later.
+#import "@preview/tysty:0.1.0": *
 // Top-level APIs automatically select PDF or HTML at the call site.
 // Explicit pdf.* and html.* APIs remain available.
 // Export this source as HTML with: typst compile --features html notebook.typ notebook.html
 #show: template
 
-// set file base, if you do not set this path,
-// you must have to set file_path argument manually
+// Set the prefix for document file_path links.
 #set-base("file:///path/to/project/")
 
 // Register a namespace and its nested tags.
@@ -86,7 +89,7 @@ API reference: [English](doc/README.api.en.md) · [简体中文](doc/README.api.
   authors: ("Alice",),
   date: datetime(year: 2026, month: 10, day: 30),
 )[
-  // embed increases the heading offset and restores the outer document context.
+  // embed increases the heading offset in PDF and restores the outer document context.
   // For a separate source file, use #embed(include "child.typ").
   // Semantic parent relationships are declared explicitly with parent_id.
   #embed[
@@ -95,12 +98,12 @@ API reference: [English](doc/README.api.en.md) · [简体中文](doc/README.api.
       parent_id: "note 1",
       title: [Sub Note 1],
       authors: ("Alice",),
-      // due to typst time limitation
       date: datetime(year: 2026, month: 10, day: 30, hour: 23, minute: 46, second: 0),
     )[
       sub note 1 content
     ]
   ]
+  // entry can declare and render a document directly, without embed.
   #entry(
     id: "sub note 2",
     parent_id: "note 1",
@@ -113,7 +116,7 @@ API reference: [English](doc/README.api.en.md) · [简体中文](doc/README.api.
   ]
 
   #render-children[Children]
-  // This will display all sub notes associated with it
+  // List the direct children of the current document.
 ]
 
 // A semantic child can also appear outside an embedded body.
@@ -131,7 +134,7 @@ API reference: [English](doc/README.api.en.md) · [简体中文](doc/README.api.
 
 #let alice = (author.new)(
   name: "Alice",
-  home: "home rl",
+  home: "https://example.com/",
   email: "no.reply@github.com",
   affiliation: "",
   orcid: "",
@@ -179,9 +182,9 @@ API reference: [English](doc/README.api.en.md) · [简体中文](doc/README.api.
 ### Static site generation
 
 ```typst
-// Save as site.typ. Requires Typst 0.15+.
+// Save as site.typ. Requires Typst 0.15.1 or later.
 // Compile with: typst compile --root . --features html,bundle --format bundle site.typ output
-#import "@local/tysty:0.1.0": *
+#import "@preview/tysty:0.1.0": *
 #show: template
 
 // Declare and render the root page explicitly, just like the child pages below.
@@ -189,8 +192,7 @@ API reference: [English](doc/README.api.en.md) · [简体中文](doc/README.api.
 
 // An embed can declare and emit its own child page. The route is computed
 // from the document ID; nested ancestors become route directories.
-// when choose ssg generate mode (typst compile --format=bundle),
-// `embed` and `entry` must be placed outside a document's main body
+// In bundle mode, keep page-producing entry calls outside another page's body.
 #embed[
   #entry(id: "research", parent_id: "home", title: [Research], authors: ())[
     = Research questions
@@ -204,7 +206,7 @@ API reference: [English](doc/README.api.en.md) · [简体中文](doc/README.api.
   #embed[
     #entry(id: "review", parent_id: "research", title: [Review], authors: ())[
       Literature review.
-      // embed document rendered to other file
+      // Reuse the research page's body in this page.
       #ssg.ref("research")
     ]
   ]
@@ -271,7 +273,13 @@ implementation. The cache is available during module initialization.
 
 ## Plans
 
+- Enhanced tables, calculations, and cell management
+- Calendar generation and TODO management
+- Ledger management and automatic billing generation
+
 ## Related Efforts
+
+<!-- Reserved for related projects to be documented. -->
 
 ## Maintainers
 
@@ -279,12 +287,11 @@ implementation. The cache is available during module initialization.
 
 ## Contributing
 
-You may pull all repository and walk through any part you interested in.
-Make Pr if you have found any problem or have method to improve those notes.
+Explore the repository and open a pull request to fix a problem or suggest an improvement.
 
 Run `node tests/run.mjs` to test this checkout as `@local/tysty:0.1.0`.
 See [tests/README.md](tests/README.md) for API coverage and test targets.
 
 ## License
 
-Apache License ver. 2.
+[Apache License 2.0](LICENSE).

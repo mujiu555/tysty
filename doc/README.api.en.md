@@ -4,10 +4,10 @@
 
 ## Getting started
 
-Use Typst 0.15.1 or later with `@local/tysty:0.1.0` installed. Import the package, select a template, and create documents with `entry`:
+Use Typst 0.15.1 or later with `@preview/tysty:0.1.0` installed. Import the package, select a template, and create documents with `entry`:
 
 ```typst
-#import "@local/tysty:0.1.0": *
+#import "@preview/tysty:0.1.0": *
 #show: template
 #entry(id: "home", title: [Notebook], authors: ())[
   #mkcover()
@@ -61,7 +61,7 @@ Use these helpers in shared PDF, HTML, and bundle sources. They choose the appro
 `mkoutline()` uses the default outline title. Use `mkoutline(title: [Contents])` to customize it. PDF and single HTML accept Typst’s `outline` options; bundles accept `title` and `depth`, although bundle `depth` currently does not limit the tree.
 
 ```typst
-#import "@local/tysty:0.1.0": *
+#import "@preview/tysty:0.1.0": *
 #show: template
 #set-base("https://example.com/notes/")
 #entry(id: "parent", title: [Parent], authors: (), file_path: "parent.typ")[
@@ -87,7 +87,7 @@ Use `#embed(include "child.typ")` for a separate source file. For bundles, keep 
 | `backlinks(label)` | Contextual array of references with `loc`, `content`, and `ctx`; `ctx.variant` is `"doc"` (ID in `ctx.payload`) or `"null"`. |
 
 ```typst
-#import "@local/tysty:0.1.0": *
+#import "@preview/tysty:0.1.0": *
 #show: template
 #entry(id: "note", title: [Note], authors: ())[
   #mkindex("term")[A term]
@@ -197,7 +197,7 @@ Use these when the output target is known. Automatic helpers above are usually s
 `html.page` requires a relative `.html` path without empty, `.` or `..` segments. For explicit paths, use the following independent bundle example:
 
 ```typst
-#import "@local/tysty:0.1.0": *
+#import "@preview/tysty:0.1.0": *
 #show: html.bundle
 #html.page("guide/index.html", title: "Guide")[
   #entry(id: "guide", title: [Guide], authors: ())[

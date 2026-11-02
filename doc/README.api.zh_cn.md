@@ -4,10 +4,10 @@
 
 ## 开始使用
 
-使用 Typst 0.15.1 或更高版本，并安装 `@local/tysty:0.1.0`。导入包、选择模板，然后通过 `entry` 创建文档：
+使用 Typst 0.15.1 或更高版本，并安装 `@preview/tysty:0.1.0`。导入包、选择模板，然后通过 `entry` 创建文档：
 
 ```typst
-#import "@local/tysty:0.1.0": *
+#import "@preview/tysty:0.1.0": *
 #show: template
 #entry(id: "home", title: [Notebook], authors: ())[
   #mkcover()
@@ -63,7 +63,7 @@
 `mkoutline()` 使用默认目录标题，可通过 `mkoutline(title: [目录])` 自定义。PDF 和单文件 HTML 接受 Typst 的 `outline` 选项；bundle 接受 `title` 和 `depth`，但目前 bundle 的 `depth` 不限制文档树层级。
 
 ```typst
-#import "@local/tysty:0.1.0": *
+#import "@preview/tysty:0.1.0": *
 #show: template
 #set-base("https://example.com/notes/")
 #entry(id: "parent", title: [Parent], authors: (), file_path: "parent.typ")[
@@ -89,7 +89,7 @@
 | `backlinks(label)` | 上下文查询，返回含 `loc`、`content`、`ctx` 的引用数组；`ctx.variant` 为 `"doc"`（ID 在 `ctx.payload` 中）或 `"null"`。 |
 
 ```typst
-#import "@local/tysty:0.1.0": *
+#import "@preview/tysty:0.1.0": *
 #show: template
 #entry(id: "note", title: [Note], authors: ())[
   #mkindex("term")[A term]
@@ -199,7 +199,7 @@
 `html.page` 要求相对 `.html` 路径，不允许空路径段、`.` 或 `..`。需要显式路径时，可使用以下独立 bundle 示例：
 
 ```typst
-#import "@local/tysty:0.1.0": *
+#import "@preview/tysty:0.1.0": *
 #show: html.bundle
 #html.page("guide/index.html", title: "Guide")[
   #entry(id: "guide", title: [Guide], authors: ())[
