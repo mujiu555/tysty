@@ -1,6 +1,7 @@
+#import "/lib/_lib.typ/doc.typ": documents
 // Manual: typst compile --root . tests/art/meta_categories.typ /tmp/typst-expanded-test.pdf
 // Expected: successful compilation and all assertions pass.
-#import "@local/tysty:0.1.0": *
+#import "/lib/_lib.typ/lib.typ": *
 #let variants = (
  (category.journal)(journal: "J", volume: 0, issue: 0, pages: ""),
  (category.conference)(conference: "C", proceedings: "P"),

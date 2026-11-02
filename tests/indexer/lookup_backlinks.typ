@@ -1,6 +1,6 @@
 // Function test: indexer/lookup_backlinks
 // Manual: typst compile --root . tests/indexer/lookup_backlinks.typ /tmp/typst-unit-test.pdf
-#import "@local/tysty:0.1.0": lookup, mkindex, indexers, backlinks
+#import "@preview/tysty:0.1.0": lookup, mkindex, indexers, backlinks
 #context assert.eq(backlinks("unit").map(r => r.content), ([First], [Second]))
 #lookup("unit", [First])
 #mkindex("unit", [Target])

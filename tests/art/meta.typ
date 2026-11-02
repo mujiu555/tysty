@@ -1,6 +1,7 @@
+#import "/lib/_lib.typ/doc.typ": documents
 // Function test: art/meta
 // Manual: typst compile --root . tests/art/meta.typ /tmp/typst-unit-test.pdf
-#import "@local/tysty:0.1.0": *
+#import "/lib/_lib.typ/lib.typ": *
 #meta(id: "unit", title: [Title], authors: ("Alice",), abstract: "Abstract")
 #context {
  assert.eq(type(documents()), array)

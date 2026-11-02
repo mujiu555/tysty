@@ -1,5 +1,5 @@
 // Outside a bundle, ssg.mkdoc falls back to HTML rendering.
-#import "@local/tysty:0.1.0": *
+#import "@preview/tysty:0.1.0": *
 #show: html.template
 #meta(id: "single", title: [Single SSG fallback], authors: ())
 #ssg.mkdoc[Fallback body.]

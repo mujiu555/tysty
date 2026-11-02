@@ -1,4 +1,5 @@
-#import "@local/tysty:0.1.0": *
+#import "/lib/_lib.typ/render.typ": mkdoc
+#import "/lib/_lib.typ/lib.typ": *
 #show: template
 #meta(id: "a", parent_id: "b", title: [A], authors: ())
 #mkdoc[First.]

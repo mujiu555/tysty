@@ -1,5 +1,6 @@
+#import "/lib/_lib.typ/render.typ": mkdoc
 // Compile with --features html,bundle --format bundle.
-#import "@local/tysty:0.1.0": *
+#import "/lib/_lib.typ/lib.typ": *
 #show: template
 #html.page("index.html", title: "Auto HTML")[
   #meta(id: "web", title: [Auto HTML], authors: ())

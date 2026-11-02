@@ -2,7 +2,7 @@
 #show text: observe-text
 // Function test: render/mkcover
 // Manual: typst compile --root . tests/render/mkcover.typ /tmp/typst-unit-test.pdf
-#import "@local/tysty:0.1.0": *
+#import "@preview/tysty:0.1.0": *
 #meta(id: "unit", title: [Title], authors: ("Alice",))
 #pdf.mkcover()
 #context {

@@ -1,17 +1,21 @@
-import { mkdtempSync, mkdirSync, readdirSync, readFileSync, symlinkSync } from 'node:fs';
+import { cpSync, mkdtempSync, readdirSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 import assert from 'node:assert/strict';
+import { stagePackage } from './package.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const output = mkdtempSync(join(tmpdir(), 'tysty-tests-'));
-// Resolve the requested package name to this checkout without modifying the
-// user's installed package or relying on a stale global package cache.
-const packages = join(output, 'packages');
-mkdirSync(join(packages, 'local', 'tysty'), { recursive: true });
-symlinkSync(root, join(packages, 'local', 'tysty', '0.1.0'), 'dir');
+// Public tests use a copied preview package with manifest exclusions applied.
+const { packages, destination } = stagePackage(root, output);
+console.log(`Copied package: ${destination}`);
+// Internal source imports also resolve to copied runtime files, with test fixtures
+// supplied separately outside the package.
+const testRoot = join(output, "test-project");
+cpSync(join(destination, "lib"), join(testRoot, "lib"), { recursive: true });
+cpSync(join(root, "tests"), join(testRoot, "tests"), { recursive: true });
 const expectedErrors = JSON.parse(readFileSync(join(root, 'tests', 'reject.json'), 'utf8'));
 const profile = process.argv.includes('--profile');
 const filters = process.argv.slice(2).filter(arg => arg !== '--profile');
@@ -74,7 +78,7 @@ for (const input of files(join(root, 'tests')).sort()) {
   if (path.startsWith('fixtures/') || (filters.length && !filters.some(filter => path.includes(filter)))) continue;
   for (const format of formats(path)) {
     const destination = join(output, path.replaceAll('/', '-').replace(/\.typ$/, '.' + format));
-    const args = ['compile', '--root', root, '--package-path', packages, '--features', 'html,bundle', '--format', format, '--diagnostic-format', 'short', input, destination];
+    const args = ['compile', '--root', testRoot, '--package-path', packages, '--features', 'html,bundle', '--format', format, '--diagnostic-format', 'short', join(testRoot, 'tests', path), destination];
     if (profile) args.push('--timings', destination + '.trace.json');
     const started = performance.now();
     const result = spawnSync('typst', args, { cwd: root, encoding: 'utf8', timeout: 60000 });

@@ -289,8 +289,9 @@ implementation. The cache is available during module initialization.
 
 Explore the repository and open a pull request to fix a problem or suggest an improvement.
 
-Run `node tests/run.mjs` to test this checkout as `@local/tysty:0.1.0`.
-See [tests/README.md](tests/README.md) for API coverage and test targets.
+Run `node tests/run.mjs` to test a copied `@preview/tysty:0.1.0` package with the manifest exclusions applied.
+Run `node tests/docs.mjs` to compile the documentation examples against that package.
+See [tests/README.md](https://github.com/mujiu555/tysty/blob/main/tests/README.md) for API coverage and test targets.
 
 ## License
 

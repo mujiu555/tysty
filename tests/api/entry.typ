@@ -1,5 +1,5 @@
 // Run as both PDF and HTML. entry declares metadata and renders its body.
-#import "@local/tysty:0.1.0": *
+#import "@preview/tysty:0.1.0": *
 #show: template
 #set-base("https://example.com/notes/")
 #entry(id: "root", title: [Entry root], authors: (), file_path: "root.typ")[
@@ -7,11 +7,11 @@
   #render-children([Children])
 ]
 #embed[
-  #render.entry(id: "child", parent_id: "root", title: [Entry child], authors: (), file_path: "child.typ")[Child body]
+  #entry(id: "child", parent_id: "root", title: [Entry child], authors: (), file_path: "child.typ")[Child body]
 ]
 #context {
   assert.eq((current.get)().id, "root")
-  let docs = documents()
+  let docs = pdf.documents()
   assert.eq(docs.find(doc => doc.id == "root").parent_id, "root")
   assert.eq(docs.find(doc => doc.id == "child").parent_id, "root")
   assert.eq(indexers().map(index => index.label), ("root", "child"))
