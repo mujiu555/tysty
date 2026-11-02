@@ -1,1 +1,1 @@
-#import "typstmode.typ": *
+#import "tysty.typ": *

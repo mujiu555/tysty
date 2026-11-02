@@ -1,12 +1,26 @@
 [package]
-name = "typst-mode"
+name = "tysty"
 version = "0.1.0"
 entrypoint = "lib/_lib.typ/lib.typ"
-authors = ["GitHub@Mujjiu555"]
+authors = ["mujiu555 <@mujiu555>"]
 license = "Apache-2.0"
-description = ""
-homepage = ""
-repository = "https://github.com/mujiu555/typst-mode"
-keywords = ["enhancement"]
+description = "Organize your notes, knowledge, work, and life in Typst."
+repository = "https://github.com/mujiu555/tysty"
+keywords = [
+  "notes",
+  "publishing",
+  "static-site",
+  "knowledge-base",
+  "enhancement",
+]
+exclude = [
+  "/tests/",
+  "/doc/",
+  "/flake.nix",
+  "/flake.lock",
+  "/.envrc",
+  "/.gitignore",
+]
+compiler = "0.15.1"
 
 [tool]

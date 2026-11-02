@@ -11,7 +11,7 @@
 //   → returns `res`
 //
 // The reserved named arguments `_b`, `_a`, `_f` passed to the wrapper feed
-// the `before`, `after`, and `fwd` hooks respectively; with the defaults,
+// the `before`, `after`, and wrapped function hooks respectively; with the defaults,
 // `before` is the identity (arguments unchanged), `after` the identity
 // (result unchanged), and `prev`/`fwd` do nothing.
 #let decorate(
@@ -26,7 +26,7 @@
     let result = after(fn(..before(.._b, ..rest), .._f), .._a)
     fwd(result)
 
-    result
+    return result
   }
 }
 

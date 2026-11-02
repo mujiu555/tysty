@@ -1,44 +1,48 @@
-#import "@preview/digestify:0.2.0": bytes-to-hex, md5
+// Static lookup is pure and can be used during module initialization.
+#import "uid.pure.typ": namespaces, _uid_compute
 
-#let v3(namespace, name) = {
-  // 1. 将命名空间和名称转换为字节并拼接
-  let namespace_bytes = bytes(namespace)
-  let name_bytes = bytes(name)
-  let data = namespace_bytes + name_bytes
+// Full input keys make changed schemas fall back to computation.
+#let _uid_cache = json("uid.builtin.json")
 
-  // 2. 计算 MD5 哈希
-  let hash = md5(data)
-
-  // 3. 将哈希字节转换为十六进制字符串
-  let hex = bytes-to-hex(hash)
-
-  // 4. 按 RFC 4122 规范设置版本号 (v3) 和变体 (variant)
-  // 版本号: 将第13个十六进制字符设置为 '3'
-  let hex_with_version = hex.slice(0, 12) + "3" + hex.slice(13)
-
-  // 变体: 将第17个十六进制字符设置为 '8', '9', 'a', 或 'b' 中的一个
-  // 这里简单设置为 '8'
-  let hex_with_variant = hex_with_version.slice(0, 16) + "8" + hex_with_version.slice(17)
-
-  // 5. 按 8-4-4-4-12 的格式插入连字符
-  let uuid = (
-    hex_with_variant.slice(0, 8)
-      + "-"
-      + hex_with_variant.slice(8, 12)
-      + "-"
-      + hex_with_variant.slice(12, 16)
-      + "-"
-      + hex_with_variant.slice(16, 20)
-      + "-"
-      + hex_with_variant.slice(20)
-  )
-
-  uuid
+#let uid(namespace, name) = {
+  if type(namespace) == str and type(name) == str {
+    let normalized = lower(namespace)
+    let hit = _uid_cache.find(entry => entry.at(0) == normalized and entry.at(1) == name)
+    if hit != none { return hit.at(2) }
+  }
+  _uid_compute(namespace, name)
 }
 
-#let namespaces = (
-  dns: "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
-  url: "6ba7b811-9dad-11d1-80b4-00c04fd430c8",
-  oid: "6ba7b812-9dad-11d1-80b4-00c04fd430c8",
-  x500: "6ba7b814-9dad-11d1-80b4-00c04fd430c8",
-)
+// Call inside context. Insert result.update into the document so subsequent
+// locations can see the cached value; result.value is an ordinary UID string.
+// No .final() read: cache entries only flow forward through the document.
+#let uid-cached(namespace, name) = {
+  // Import lazily: state and record use the static uid wrapper above.
+  import "state.typ": _mkstate
+  let _uid_context_cache = _mkstate("tysty.uid.context-cache.v1", (:))
+  let key = repr((
+    if type(namespace) == str { lower(namespace) }
+    else if type(namespace) == bytes { array(namespace) }
+    else { namespace },
+    if type(name) == str or type(name) == bytes { array(bytes(name)) }
+    else { name },
+  ))
+  let cache = (_uid_context_cache.get)()
+  if key in cache {
+    return (value: cache.at(key), update: [])
+  }
+  let value = uid(namespace, name)
+  let update = (_uid_context_cache.update)(entries => {
+    entries.insert(key, value)
+    entries
+  })
+  (value: value, update: update)
+}
+
+// Callback form automatically inserts the state update. The callback receives
+// the UID string and returns document content.
+#let with-uid(namespace, name, body) = context {
+  let cached = uid-cached(namespace, name)
+  cached.update
+  body(cached.value)
+}
