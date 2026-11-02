@@ -1,5 +1,6 @@
+#import "/lib/_lib.typ/render.typ": mkdoc
 // Compile this same source as PDF and HTML to exercise target dispatch.
-#import "@local/tysty:0.1.0": *
+#import "/lib/_lib.typ/lib.typ": *
 #show: template
 #let tree = (tag.register)("topics", (science: (:),))
 #mkindex("standalone", [Independent target])

@@ -1,5 +1,5 @@
 // typst compile --root . tests/render/pdf_namespace.typ /tmp/tysty-pdf-namespace.pdf
-#import "@local/tysty:0.1.0": *
+#import "@preview/tysty:0.1.0": *
 #show: pdf.template
 #let tree = (tag.register)("topics", (science: (:),))
 #meta(id: "root", title: [Root], authors: ())

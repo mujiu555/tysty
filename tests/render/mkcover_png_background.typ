@@ -2,7 +2,7 @@
 #show text: observe-text
 // Manual: typst compile --root . tests/render/mkcover_png_background.typ /tmp/typst-expanded-test.pdf
 // Expected: successful compilation and all assertions pass.
-#import "@local/tysty:0.1.0": *
+#import "@preview/tysty:0.1.0": *
 #import "/tests/fixtures/png.typ": png
 #set page(width: 160mm, height: 240mm, margin: 12mm, background: [
  #image(png, width: 100%, height: 100%, fit: "stretch")

@@ -1,6 +1,6 @@
 // Function test: embed/embed
 // Manual: typst compile --root . tests/embed/embed.typ /tmp/typst-unit-test.pdf
-#import "@local/tysty:0.1.0": *
+#import "@preview/tysty:0.1.0": *
 #meta(id: "root", title: [Root], authors: ())
 #embed([
  #context assert.eq(heading.offset, 1)

@@ -1,6 +1,6 @@
 // Function test: indexer/mkindex_indexers
 // Manual: typst compile --root . tests/indexer/mkindex_indexers.typ /tmp/typst-unit-test.pdf
-#import "@local/tysty:0.1.0": *
+#import "@preview/tysty:0.1.0": *
 #mkindex("unit", [Target])
 #context {
  let entries = indexers()

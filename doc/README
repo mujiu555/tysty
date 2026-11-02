@@ -1,0 +1,23 @@
+Documentation directory
+=======================
+
+User documentation:
+- README.api.en.md: English API reference.
+- README.api.zh_cn.md: Simplified Chinese API reference.
+- imgs/: output screenshots linked from the project README.
+
+Project conventions and planning:
+- README.commit.md and SPEC.commit.md: commit conventions.
+- README.gitflow.md: branching workflow.
+- README.release.md: versioning conventions.
+- SPEC.blog.md: writing conventions.
+- TODO.txt: development roadmap, not part of the Universe submission.
+
+License copies:
+- LICENSE: project license copy with its copyright notice.
+- LICENSE.apache: Apache License 2.0 reference text.
+- ../LICENSE: the license distributed with the package.
+
+The user documentation and screenshots are retained in the Universe submission
+for links from README.md. The manifest excludes /doc/ from compiler downloads.
+Development-only documents need not be copied into the Universe submission.

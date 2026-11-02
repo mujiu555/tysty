@@ -1,100 +1,83 @@
 # Tests
 
-Run the complete suite with Node.js and Typst 0.15.1 or later:
+Use Node.js 24 or later and Typst 0.15.1 or later.
 
 ```sh
 node tests/run.mjs
+node tests/docs.mjs
 ```
 
-Pass path fragments to select tests, for example:
+Both commands copy tracked project files into a temporary
+`packages/preview/tysty/0.1.0` directory, applying the manifest's `exclude`
+patterns. The copy includes current working-tree edits to tracked files.
+New package files must be tracked before they enter the copy. No package is
+symlinked, and installed packages are not modified. Each run prints its package
+and output paths; `package-files.json` records the manifest and copied files.
+
+## Public and internal tests
+
+The public API is the set of names selected in `lib/_lib.typ/tysty.typ`.
+`api/exports.typ` imports those names from `@preview/tysty:0.1.0`.
+`api/entry.typ` exercises public document creation as PDF and HTML, including
+references, child lists, metadata, and source links.
+
+Tests using only public APIs import the copied preview package. Tests requiring
+internal APIs import `/lib/_lib.typ/lib.typ` explicitly for the common APIs and
+import the implementation module for the internal function being exercised.
+For example, `documents` comes from `/lib/_lib.typ/doc.typ` and automatic
+`mkdoc` comes from `/lib/_lib.typ/render.typ`. These internal tests resolve source imports against a separate test project
+containing the copied package's runtime files and the test fixtures. Their
+imports do not enlarge the public package contract.
+
+Internal coverage includes:
+
+- Metadata queries in `art/*` and `api/types_tags.typ`.
+- Automatic `mkdoc` in `render/auto.typ`, `render/auto_bundle.typ`, and the
+  breadcrumb-cycle rejection cases.
+- Function identity in `render/aliases.typ`.
+- UID, records, enums, state, utilities, decorators, and their rejection cases.
+
+The exported `pdf`, `html`, and `ssg` namespaces are tested through the preview
+package in their corresponding rendering tests. SSG assertions inspect routes,
+CSS links, section outlines, reused page bodies, and mixed HTML/PDF bundles.
+
+Rejection cases must fail with the specific diagnostic in `reject.json`.
+An unrelated error does not count as a pass. Fixtures are helper files.
+
+## Selecting tests
+
+Pass path fragments to select cases:
 
 ```sh
 node tests/run.mjs api render
 node tests/run.mjs uid
 ```
 
-The runner creates an isolated package directory in `/tmp` and links this
-checkout as `@local/tysty:0.1.0` with Typst's `--package-path`. It does not modify
-installed packages or use an older installed copy. All public API tests import
-that package name. Compile a test manually with your own local package
-installation, or use the runner to ensure it tests this checkout.
+PDF, HTML, and bundle cases use their respective output targets. `render/auto`
+and `api/entry` run as PDF and HTML. Outputs remain in the reported temporary
+directory for inspection.
 
-PDF, HTML, and bundle cases use their appropriate output targets; `render/auto`
-and `api/entry` run as both PDF and HTML. Generated files remain in the temporary
-directory printed by the runner. SSG checks also inspect routes, CSS links,
-section outlines, shared page bodies, and mixed HTML/PDF bundle outputs.
+## Documentation checks
 
-Rejection cases live under `reject/`. Each must fail with the diagnostic recorded
-in `reject.json`; an unrelated compilation error does not count as a pass.
-Fixtures are helpers, not standalone tests.
-
-## Public API coverage
-
-The supported entry point is `lib/_lib.typ/tysty.typ`, re-exported by the package.
-`api/exports.typ` checks the full top-level import contract. Behavior is exercised
-by the following cases:
-
-| API | Behavior tests |
-| --- | --- |
-| `meta`, `documents` | `art/meta`, `art/meta_categories`, `api/types_tags`, `reject/art/*` |
-| `current.get/at/final/update/enter/leave` | `doc/current`, `embed/embed`, `reject/doc/*` |
-| `author`, `img`, `category` | `api/types_tags`, `art/meta_categories`, `render/mkcover_png_background`, `reject/types/*` |
-| `tag.register/sub/get-doc` | `api/types_tags`, `render/auto`, `reject/tag/*` |
-| `mkindex`, `indexers`, `lookup`, `backlinks` | `indexer/*`, `render/auto`, `reject/indexer/*` |
-| `entry`, `render.entry`, `set-base`, `render-children` | `api/entry` (PDF and HTML) |
-| `template`, `embed`, `mkcover`, `mkdoc`, `mkoutline`, `render-tags` | `render/auto` (PDF and HTML), `embed/embed`, `render/auto_bundle`, `render/ssg` |
-| `render.*` | Same automatic functions as the top-level aliases; `api/exports` checks both export surfaces |
-| `pdf.*` | `render/pdf_namespace`, `render/mkcover`, `render/mkcover_png_background`, `reject/render/mkcover_bad_png` |
-| `html.template/mkcover/mkdoc/embed/lookup/render-children/render-tags/page/bundle` | `render/html_single`, `render/html_bundle`, `render/auto_bundle`, `reject/render/page_invalid_path` |
-| `html.stylesheet` | `api/exports`, generated section outline checks in `render/ssg` |
-| `ssg.mkoutline`, `ssg.ref`, `ssg.route/mkdoc/embed/is-bundle-output/entities` | `render/ssg`, `render/ssg_ref`, `render/ssg_html`, `reject/render/ssg_ref_unrendered` |
-| Shared renderer `entities()` query, `file_base` state | `render/auto_bundle`, `api/entry` |
-
-The renderer aliases are also checked for function identity in `api/exports`, so
-behavior tests for a top-level alias cover the corresponding `render.*` alias.
-
-## Internal tests
-
-`uid`, `record`, `enum`, `state`, `util`, `decorate`, and
-`regressions/record/update_auto.typ` test implementation modules that are not
-exported by the package entry point. They intentionally import source files.
-Their rejection cases follow the same rule. These are retained because they
-still protect current behavior, including FNV-1a vectors and precomputed cache
-consistency.
-
-Obsolete UUID v5 vectors have been replaced by FNV-1a container vectors. The
-old duplicate cover-title regression and documentation/package text-presence
-checks have been removed. Unknown-field regressions now live under
-`reject/record/`. SSG uses `template` as its document wrapper; `entry` requires
-metadata arguments. PDF and HTML renderer `entities()` query the same metadata label,
-which the mixed bundle test verifies.
+`node tests/docs.mjs` extracts all Typst code blocks from the README and both
+API references. Complete examples compile as written against the copied preview
+package. Snippets receive the package import and template setup. The command
+checks local documentation links, PDF/HTML output, generated bundle routes,
+stylesheet paths, and reused research-page content. Documentation remains in
+the checkout for extraction; it is excluded from the copied runtime package.
 
 ## Performance profiling
-
-Use the same isolated package and target selection as the correctness suite:
 
 ```sh
 node tests/run.mjs --profile art api render
 ```
 
 Each compilation prints elapsed wall time and writes a `*.trace.json` beside
-its output in the reported temporary directory. These traces come from Typst's
-standard `compile --timings <output.json>` option. Open a trace in
-[Perfetto](https://ui.perfetto.dev) to inspect compilation phases and source
-locations. Profiling also runs the usual correctness and output checks.
+its output using Typst's `--timings` option. Open traces in
+[Perfetto](https://ui.perfetto.dev). Profiling runs the normal output checks too.
 
-For before/after measurements, use the same Typst version, machine, fonts,
-fixtures, output target, and job count. Run one warm-up, then at least five
-independent runs of the same selected tests; compare medians and retain the
-range. Do not run competing builds concurrently. These are fresh-process
-compilations with potentially warm OS caches, not incremental editor timings.
-Trace collection adds overhead: use normal compilations for headline latency
-and traces to locate hotspots. Record `typst --version`, the revision, command,
-and environment with results. For a single controlled compilation, reuse the
-runner's printed package directory and pass `--jobs 1` and `--timings` directly
-to `typst compile`; measure uninstrumented wall time with your shell's `time`.
-
-Parent metadata fixtures under `art/parent_*` verify that declarations preserve
-parent IDs, including unresolved and cyclic relationships. Traversal errors are
-tested where rendering actually follows parents (for example,
-`reject/render/breadcrumb_cycle.typ`).
+Compare the same compiler, machine, fonts, fixtures, targets, and job count.
+Warm up once, then compare medians and ranges from at least five independent
+runs without competing builds. Trace collection adds overhead; use ordinary
+compilations for headline timings. Record the compiler version, revision,
+commands, and environment with results.

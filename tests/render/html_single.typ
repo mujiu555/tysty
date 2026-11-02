@@ -1,5 +1,5 @@
 // typst compile --root . --features html tests/render/html_single.typ /tmp/tysty-single.html
-#import "@local/tysty:0.1.0": *
+#import "@preview/tysty:0.1.0": *
 #show: html.template.with(title: "Single <notebook>", lang: "zh")
 #meta(id: "root", title: [笔记], authors: ())
 #html.mkdoc[

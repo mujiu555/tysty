@@ -1,5 +1,5 @@
 // Bundle generation and ref embed the saved body, preserving document scope.
-#import "@local/tysty:0.1.0": *
+#import "@preview/tysty:0.1.0": *
 #show: template
 #meta(id: "home", title: [Home], authors: ())
 #ssg.mkdoc[

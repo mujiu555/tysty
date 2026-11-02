@@ -1,5 +1,5 @@
 // typst compile --root . --features html,bundle --format bundle tests/render/ssg.typ /tmp/tysty-ssg
-#import "@local/tysty:0.1.0": *
+#import "@preview/tysty:0.1.0": *
 #show: template
 
 // Calculate routes before emitting bundle documents. Bundle pages are

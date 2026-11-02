@@ -1,4 +1,4 @@
-#import "@local/tysty:0.1.0": mkindex, indexers, lookup
+#import "@preview/tysty:0.1.0": mkindex, indexers, lookup
 
 // Ordinary labels and unrelated metadata must not enter the index or its lookup.
 Ordinary target <unit>

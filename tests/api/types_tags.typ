@@ -1,4 +1,5 @@
-#import "@local/tysty:0.1.0": *
+#import "/lib/_lib.typ/doc.typ": documents
+#import "/lib/_lib.typ/lib.typ": *
 #import "/tests/fixtures/png.typ": png
 
 #let alice = (author.new)(name: "Alice", affiliation: "Lab", email: "a@example.com", home: "https://example.com/", orcid: "0000-0000")
