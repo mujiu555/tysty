@@ -1,4 +1,4 @@
-# typst-mode
+# Tysty
 
 [![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
 [![conventional commit compliant](https://img.shields.io/badge/git%20commit-conventional%20commit-brightgreen.svg?style=flat-square)](https://www.conventionalcommits.org/en/v1.0.0/#specification)
@@ -9,9 +9,6 @@
 ### Referencing
 
 ### Credit: Code/Library
-
-1. [digestify](https://github.com/ParaN3xus/digestify.git):
-  License: MIT, no NOTICE provided
 
 ## Structure
 
@@ -37,7 +34,191 @@ Root: /                         ; Project root
 +- typst.toml                   ; library spec
 ```
 
-## UID identifiers
+## Usage
+
+API reference: [English](doc/README.api.en.md) · [简体中文](doc/README.api.zh_cn.md)
+
+```typst
+// Save this example as notebook.typ.
+// Compile with: typst compile --root . notebook.typ
+// Requires tysty 0.1.0 installed in the local package namespace.
+#import "@local/tysty:0.1.0": *
+// Top-level APIs automatically select PDF or HTML at the call site.
+// Explicit pdf.* and html.* APIs remain available.
+// Export this source as HTML with: typst compile --features html notebook.typ notebook.html
+#show: template
+
+// set file base, if you do not set this path,
+// you must have to set file_path argument manually
+#set-base("file:///path/to/project/")
+
+// Register a namespace and its nested tags.
+#let topics = (tag.register)("notebook", (
+  science: (physics: (:),),
+))
+#let physics = topics.children.science.children.physics.tag
+// Attach a tag to a document by adding tags: (physics,) to its entry call.
+
+// Declare and render a document with entry.
+// Place cover rendering inside its content.
+// id, title, and authors are required; authors is an array of names or author records.
+// Each document id must be unique within one compilation.
+// Omitting parent_id inherits the current document, if one exists.
+// Use parent_id: auto to declare an independent root.
+#entry(
+  id: "notebook",
+  title: [Book],
+  authors: ("Alice",),
+  date: datetime(year: 2026, month: 10, day: 30),
+  tags: (physics,),
+)[
+  #mkcover()
+  // Automatic outline: headings in PDF/single HTML, document routes in bundles.
+  #mkoutline()
+]
+
+// entry renders a heading and body, registers the document as a reference
+// target, and adds it to the prev/next reading sequence.
+#entry(
+  id: "note 1",
+  parent_id: auto,
+  title: [Note 1],
+  authors: ("Alice",),
+  date: datetime(year: 2026, month: 10, day: 30),
+)[
+  // embed increases the heading offset and restores the outer document context.
+  // For a separate source file, use #embed(include "child.typ").
+  // Semantic parent relationships are declared explicitly with parent_id.
+  #embed[
+    #entry(
+      id: "sub note 1",
+      parent_id: "note 1",
+      title: [Sub Note 1],
+      authors: ("Alice",),
+      // due to typst time limitation
+      date: datetime(year: 2026, month: 10, day: 30, hour: 23, minute: 46, second: 0),
+    )[
+      sub note 1 content
+    ]
+  ]
+  #entry(
+    id: "sub note 2",
+    parent_id: "note 1",
+    title: [Sub Note 2],
+    authors: ("Alice",),
+    date: datetime(year: 2026, month: 10, day: 30, hour: 23, minute: 46, second: 0),
+  )[
+    sub note 2 content
+    #mkindex("label")[content shown]
+  ]
+
+  #render-children[Children]
+  // This will display all sub notes associated with it
+]
+
+// A semantic child can also appear outside an embedded body.
+#entry(
+  id: "sub note 3",
+  parent_id: "note 1",
+  title: [Sub Note 3],
+  authors: ("Alice",),
+  date: datetime(year: 2026, month: 10, day: 30, hour: 23, minute: 46, second: 0),
+)[
+  #mkcover()
+  sub note 3 content
+  #lookup("label")[reference]
+]
+
+#let alice = (author.new)(
+  name: "Alice",
+  home: "home rl",
+  email: "no.reply@github.com",
+  affiliation: "",
+  orcid: "",
+)
+
+#let topics2 = (tag.register)(
+  // register tag namespace
+  "topics:root",
+  (
+  // two sub tag
+    index: (:),
+    about: (:),
+  ),
+)
+
+#let index = topics2.children.index.tag
+#let about = topics2.children.about.tag
+
+#entry(
+  id: "note 2",
+  parent_id: auto,
+  title: [Note 2],
+  authors: (alice,),
+  date: datetime(year: 2026, month: 10, day: 30, hour: 23, minute: 46, second: 0),
+  // you can define category for a document
+  category: (category.book)(
+    publisher: "github",
+    isbn: "(none)",
+    edition: "0.1.0",
+  ),
+  tags: (index,),
+)[
+  Create and render a new document
+]
+
+#render-tags(topics)
+
+// Reference a registered target with #lookup("sub note 1", [Sub Note 1]).
+// In a context block, backlinks("sub note 1") returns its recorded references.
+// render-children([Child notes]) lists children of the current document.
+// render-tags(topics) renders the registered tag tree and its rendered notes.
+// These views resolve registered targets even when they appear later in the source.
+```
+
+### Static site generation
+
+```typst
+// Save as site.typ. Requires Typst 0.15+.
+// Compile with: typst compile --root . --features html,bundle --format bundle site.typ output
+#import "@local/tysty:0.1.0": *
+#show: template
+
+// Declare and render the root page explicitly, just like the child pages below.
+#entry(id: "home", title: [Notebook], authors: ())[Entry page]
+
+// An embed can declare and emit its own child page. The route is computed
+// from the document ID; nested ancestors become route directories.
+// when choose ssg generate mode (typst compile --format=bundle),
+// `embed` and `entry` must be placed outside a document's main body
+#embed[
+  #entry(id: "research", parent_id: "home", title: [Research], authors: ())[
+    = Research questions
+    Research notes.
+    == Open problems
+    More to explore.
+    // The automatic mkoutline selects the route-aware document tree in bundles.
+    #mkoutline()
+  ]
+
+  #embed[
+    #entry(id: "review", parent_id: "research", title: [Review], authors: ())[
+      Literature review.
+      // embed document rendered to other file
+      #ssg.ref("research")
+    ]
+  ]
+]
+
+// Outputs: index.html, research/index.html,
+// research/review/index.html, and tysty.css.
+// entry uses each document's metadata and parent chain to determine its route.
+// Navigation and breadcrumbs are in the top bar; section links appear in the right sidebar.
+// mkoutline() uses Typst's outline for PDF/single HTML and SSG routes for bundles.
+// Keep page-producing entry calls outside another page's entry body.
+```
+
+### UID identifiers
 
 `uid(namespace, name)` uses pure Typst FNV-1a 32 with native integer bit
 operations. These identifiers are **non-standard UUIDs that borrow the UUID
@@ -57,183 +238,6 @@ Built-in identifiers use the precomputed FNV-1a 32 table in
 `lib/_lib.typ/uid.builtin.json`. Cache keys include the complete namespace and
 name; inputs absent from the table are computed with the same pure Typst
 implementation. The cache is available during module initialization.
-
-## Usage
-
-```typst
-// Save this example as notebook.typ in the project root.
-// Compile with: typst compile --root . notebook.typ
-// Use your installed package version, e.g. "@preview/tysty:0.1.0".
-// For a local checkout, import "lib/_lib.typ/lib.typ" instead.
-#import "lib/_lib.typ/lib.typ": *
-// Top-level APIs automatically select PDF or HTML at the call site.
-// The render module provides the same automatic APIs as render.mkdoc, etc.
-// Explicit pdf.* and html.* APIs remain available.
-// Export this source as HTML with: typst compile --features html notebook.typ notebook.html
-#show: template
-
-// Register a namespace and its nested tags.
-#let topics = (tag.register)("notebook", (
-  science: (physics: (:),),
-))
-#let physics = topics.children.science.children.physics.tag
-// Attach a tag to a document by adding tags: (physics,) to its meta call.
-
-// Declare a document with metadata.
-// Call meta before any mk* rendering function for that document.
-// id, title, and authors are required; authors is an array of names or author records.
-// Each document id must be unique within one compilation.
-// Omitting parent_id makes the document its own semantic root.
-#meta(
-  id: "notebook",
-  title: [Book],
-  authors: ("Alice",),
-  date: datetime(year: 2026, month: 10, day: 30),
-)
-// Render the current document's cover without registering a reference target.
-#mkcover()
-
-// meta selects the current document; Typst's built-in metadata is a different API.
-#meta(
-  id: "note 1",
-  title: [Note 1],
-  authors: ("Alice",),
-  date: datetime(year: 2026, month: 10, day: 30),
-)
-
-// mkdoc renders the current document's heading and body, registers its id as
-// a reference target, and adds it to the prev/next reading sequence.
-// Use mkdoc(new-page: false)[...] to omit its initial page break.
-#mkdoc[
-  // embed increases the heading offset and restores the outer document context.
-  // For a separate source file, use #embed(include "child.typ").
-  // Semantic parent relationships are declared explicitly with parent_id.
-  #embed[
-    #meta(
-      id: "sub note 1",
-      parent_id: "note 1",
-      title: [Sub Note 1],
-      authors: ("Alice",),
-      date: datetime(year: 2026, month: 10, day: 30),
-    )
-    #mkdoc[
-      sub note 1 content
-    ]
-  ]
-  // Without embed, a subsequent meta call replaces the current document
-  // for the remainder of this scope; mkdoc itself does not restore it.
-  #meta(
-    id: "sub note 2",
-      parent_id: "note 1",
-    title: [Sub Note 2],
-    authors: ("Alice",),
-    date: datetime(year: 2026, month: 10, day: 30),
-  )
-  #mkdoc[
-    sub note 2 content
-  ]
-]
-
-// A semantic child can also appear outside an embedded body.
-#meta(
-  id: "sub note 3",
-  parent_id: "note 1",
-  title: [Sub Note 3],
-  authors: ("Alice",),
-  date: datetime(year: 2026, month: 10, day: 30),
-)
-// A child document may have both a cover and a registered document heading.
-#mkcover()
-#mkdoc[
-  sub note 3 content
-]
-
-// Reference a registered target with #lookup("sub note 1", [Sub Note 1]).
-// In a context block, backlinks("sub note 1") returns its recorded references.
-// render-children([Child notes]) lists children of the current document.
-// render-tags(topics) renders the registered tag tree and its rendered notes.
-// These views resolve registered targets even when they appear later in the source.
-```
-
-```typst
-// HTML bundle example: save as website.typ in the project root.
-// Requires Typst 0.15+.
-// typst compile --root . --features html,bundle --format bundle website.typ site
-// The output contains index.html, notes/motion.html, and tysty.css.
-// Bundle background and typography can be customized with:
-// #show: html.bundle.with(css: read("my-theme.css"))
-#import "lib/_lib.typ/lib.typ": *
-// At bundle scope, the automatic template emits the shared CSS asset.
-#show: template
-
-#html.page("index.html", title: "Notebook")[
-  #meta(id: "home", title: [Notebook], authors: ("Alice",))
-  #html.mkcover()
-  #html.mkdoc[
-    Read #html.lookup("motion", [the motion note]).
-    #html.render-children([Notes])
-  ]
-]
-
-#html.page("notes/motion.html", title: "Motion")[
-  #meta(id: "motion", parent_id: "home", title: [Motion], authors: ("Alice",))
-  #html.mkdoc[
-    Velocity describes how position changes over time.
-    Return to #html.lookup("home", [the notebook]).
-  ]
-]
-
-// page creates an output file and restores the surrounding document context.
-// mkdoc registers the note; mkcover does not register an index target.
-// Links and backlinks resolve across all pages in the bundle.
-// Each page links to the shared CSS using its relative output path.
-//
-// For single-file HTML, omit bundle and page, and use:
-// #show: html.template.with(title: "Notebook")
-// #meta(id: "home", title: [Notebook], authors: ())
-// #html.mkdoc[Hello]
-// Compile with: typst compile --features html website.typ website.html
-// template embeds CSS by default; css: read("my-theme.css") overrides it.
-```
-
-## Static site generation
-
-```typst
-// Save as site.typ. Requires Typst 0.15+.
-// Compile with: typst compile --root . --features html,bundle --format bundle site.typ output
-#import "lib/_lib.typ/lib.typ": *
-#show: template
-
-// Declare and render the root page explicitly, just like the child pages below.
-#meta(id: "home", title: [Notebook], authors: ())
-#mkdoc[Entry page]
-
-// An embed can declare and emit its own child page. The route is computed
-// from the document ID; nested ancestors become route directories.
-#embed[
-  #meta(id: "research", parent_id: "home", title: [Research], authors: ())
-  #mkdoc[
-    = Research questions
-    Research notes.
-    == Open problems
-    More to explore.
-    // The automatic mkoutline selects the route-aware document tree in bundles.
-    #mkoutline()
-  ]
-
-  #embed[
-    #meta(id: "review", parent_id: "research", title: [Review], authors: ())
-    #mkdoc[Literature review.]
-  ]
-]
-
-// Outputs: index.html, research/index.html,
-// research/review/index.html, and tysty.css.
-// mkdoc uses each document's metadata and parent chain to determine its route.
-// Navigation and breadcrumbs are in the top bar; section links appear in the right sidebar.
-// mkoutline() uses Typst's outline for PDF/single HTML and SSG routes for bundles.
-// Keep page-producing mkdoc calls outside another page's mkdoc body.
-```
 
 ## Plans
 
