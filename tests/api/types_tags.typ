@@ -24,7 +24,7 @@
 #assert(child.id != (science.sub)("optics").id)
 #assert.eq(tree.children.empty.children, (:))
 #meta(id: "root", title: [Root], authors: (alice, "Bob"), tags: (science,))
-#meta(id: "child", parent_id: "root", title: [Child], authors: (), tags: (physics,))
+#meta(id: "child", parent-id: "root", title: [Child], authors: (), tags: (physics,))
 #context {
   assert.eq((science.get-doc)().map(d => d.id), ("root",))
   assert.eq((physics.get-doc)().map(d => d.id), ("child",))

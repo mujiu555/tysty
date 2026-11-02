@@ -19,15 +19,15 @@ Use Typst 0.15.1 or later with `@preview/tysty:0.1.0` installed. Import the pack
 
 `entry(..fields, content)` declares metadata and renders the document's heading and body, registers its ID as a reference target, and adds it to the reading sequence. Put `mkcover()` inside its body when a cover is needed. Document IDs must be unique within a compilation.
 
-When `parent_id` is omitted, `entry` inherits the current document's ID if available; otherwise it creates a semantic root. Explicit `parent_id: auto` always makes the document its own root. `entry` does not restore the previous current document; use `embed` to save and restore that context. Parent relationships are separate from visual heading nesting.
+When `parent-id` is omitted, `entry` inherits the current document's ID if available; otherwise it creates a semantic root. Explicit `parent-id: auto` always makes the document its own root. `entry` does not restore the previous current document; use `embed` to save and restore that context. Parent relationships are separate from visual heading nesting.
 
 | Field | Type | Default and meaning |
 | --- | --- | --- |
 | `id` | `str` | Required, unique |
 | `title` | `content` | Required, e.g. `[Title]` |
 | `authors` | `array` | Required; strings or author records; `()` allowed |
-| `parent_id` | `str` or `auto` | Inherit in `entry`; explicit `auto` means root |
-| `file_path` | `str` | `"(no link (uri))"`; appended to file base |
+| `parent-id` | `str` or `auto` | Inherit in `entry`; explicit `auto` means root |
+| `file-path` | `str` | `"(no link (uri))"`; appended to file base |
 | `date` | `datetime` | `datetime.today()` |
 | `lang` | `str` | `"en_US"` |
 | `version` | `str` | `"0.0.1"` |
@@ -42,7 +42,7 @@ When `parent_id` is omitted, `entry` inherits the current document's ID if avail
 
 `entry` accepts the metadata fields listed above. Rendering options such as `new-page` are not supported by `entry`. Optional fields still require their declared types; `none` is not a substitute for their defaults.
 
-`meta(..fields)` is the lower-level declaration API with the same metadata fields. It publishes metadata and selects the current document without rendering or registering a heading. Unlike `entry`, omitted `parent_id` means a root. Use `entry` to declare and render a document in one call.
+`meta(..fields)` is the lower-level declaration API with the same metadata fields. It publishes metadata and selects the current document without rendering or registering a heading. Unlike `entry`, omitted `parent-id` means a root. Use `entry` to declare and render a document in one call.
 
 ## Automatic rendering
 
@@ -56,7 +56,7 @@ Use these helpers in shared PDF, HTML, and bundle sources. They choose the appro
 | `mkoutline(..args)` | Automatically renders a heading outline for PDF/single HTML, or a document tree with page links for bundles (including calls inside bundle pages). |
 | `render-children(title)` | Lists directly related children that have rendered reference targets. |
 | `render-tags(tree)` | Renders a registered tag tree and rendered documents directly tagged at each node. |
-| `set-base(p)` | Sets the string prefix used with document `file_path` links. |
+| `set-base(p)` | Sets the string prefix used with document `file-path` links. |
 
 `mkoutline()` uses the default outline title. Use `mkoutline(title: [Contents])` to customize it. PDF and single HTML accept Typst’s `outline` options; bundles accept `title` and `depth`, although bundle `depth` currently does not limit the tree.
 
@@ -64,7 +64,7 @@ Use these helpers in shared PDF, HTML, and bundle sources. They choose the appro
 #import "@preview/tysty:0.1.0": *
 #show: template
 #set-base("https://example.com/notes/")
-#entry(id: "parent", title: [Parent], authors: (), file_path: "parent.typ")[
+#entry(id: "parent", title: [Parent], authors: (), file-path: "parent.typ")[
   #mkoutline()
   #embed[
     #entry(id: "child", title: [Child], authors: ())[

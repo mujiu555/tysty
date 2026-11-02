@@ -21,15 +21,15 @@
 
 `entry(..fields, content)` 声明元数据并渲染文档标题和正文，将 ID 注册为引用目标，并加入阅读顺序。需要封面时，在正文中调用 `mkcover()`。一次编译中的文档 ID 必须唯一。
 
-省略 `parent_id` 时，`entry` 会继承当前文档的 ID；没有当前文档时则创建语义根节点。显式设置 `parent_id: auto` 总是将文档设为自身的根节点。`entry` 不会恢复先前的当前文档；请用 `embed` 保存并恢复上下文。父子关系与标题的视觉嵌套相互独立。
+省略 `parent-id` 时，`entry` 会继承当前文档的 ID；没有当前文档时则创建语义根节点。显式设置 `parent-id: auto` 总是将文档设为自身的根节点。`entry` 不会恢复先前的当前文档；请用 `embed` 保存并恢复上下文。父子关系与标题的视觉嵌套相互独立。
 
 | 字段 | 类型 | 默认值与含义 |
 | --- | --- | --- |
 | `id` | `str` | 必填且唯一 |
 | `title` | `content` | 必填，例如 `[标题]` |
 | `authors` | `array` | 必填；字符串或作者记录，可为空数组 |
-| `parent_id` | `str` 或 `auto` | `entry` 默认继承；显式 `auto` 表示根节点 |
-| `file_path` | `str` | `"(no link (uri))"`；拼接到文件链接前缀 |
+| `parent-id` | `str` 或 `auto` | `entry` 默认继承；显式 `auto` 表示根节点 |
+| `file-path` | `str` | `"(no link (uri))"`；拼接到文件链接前缀 |
 | `date` | `datetime` | `datetime.today()`；当天日期 |
 | `lang` | `str` | `"en_US"` |
 | `version` | `str` | `"0.0.1"` |
@@ -44,7 +44,7 @@
 
 `entry` 接受上表列出的元数据字段，不支持 `new-page` 等渲染选项。可选字段仍需符合声明的类型，不能用 `none` 替代其默认值。
 
-`meta(..fields)` 是底层声明 API，接受同样的元数据字段。它发布元数据并选择当前文档，但不渲染或注册标题。与 `entry` 不同，省略 `parent_id` 表示根节点。使用 `entry` 可以一次完成文档声明与渲染。
+`meta(..fields)` 是底层声明 API，接受同样的元数据字段。它发布元数据并选择当前文档，但不渲染或注册标题。与 `entry` 不同，省略 `parent-id` 表示根节点。使用 `entry` 可以一次完成文档声明与渲染。
 
 ## 自动渲染
 
@@ -58,7 +58,7 @@
 | `mkoutline(..args)` | PDF 和单文件 HTML 自动生成标题目录；bundle 自动生成带页面链接的文档树，包括在 bundle 页面内调用时。 |
 | `render-children(title)` | 列出具有已渲染引用目标的直接子文档。 |
 | `render-tags(tree)` | 渲染注册的标签树及直接关联到各节点的已渲染文档。 |
-| `set-base(p)` | 设置文档 `file_path` 链接使用的字符串前缀。 |
+| `set-base(p)` | 设置文档 `file-path` 链接使用的字符串前缀。 |
 
 `mkoutline()` 使用默认目录标题，可通过 `mkoutline(title: [目录])` 自定义。PDF 和单文件 HTML 接受 Typst 的 `outline` 选项；bundle 接受 `title` 和 `depth`，但目前 bundle 的 `depth` 不限制文档树层级。
 
@@ -66,7 +66,7 @@
 #import "@preview/tysty:0.1.0": *
 #show: template
 #set-base("https://example.com/notes/")
-#entry(id: "parent", title: [Parent], authors: (), file_path: "parent.typ")[
+#entry(id: "parent", title: [Parent], authors: (), file-path: "parent.typ")[
   #mkoutline()
   #embed[
     #entry(id: "child", title: [Child], authors: ())[

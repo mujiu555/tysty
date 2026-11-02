@@ -16,11 +16,11 @@
 ]
 
 #html.page("notes/child.html", title: "Child")[
-  #meta(id: "child", parent_id: "root", title: [Child], authors: ())
+  #meta(id: "child", parent-id: "root", title: [Child], authors: ())
   #html.mkdoc[
     #html.lookup("root", [Return to root])
     #embed[
-      #meta(id: "nested", parent_id: "child", title: [Nested], authors: ())
+      #meta(id: "nested", parent-id: "child", title: [Nested], authors: ())
       #html.mkdoc(new-page: false)[Nested content.]
     ]
     #html.lookup("root", [Restored child context])

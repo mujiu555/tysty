@@ -52,7 +52,7 @@ API reference: [English](doc/README.api.en.md) · [简体中文](doc/README.api.
 // Export this source as HTML with: typst compile --features html notebook.typ notebook.html
 #show: template
 
-// Set the prefix for document file_path links.
+// Set the prefix for document file-path links.
 #set-base("file:///path/to/project/")
 
 // Register a namespace and its nested tags.
@@ -66,8 +66,8 @@ API reference: [English](doc/README.api.en.md) · [简体中文](doc/README.api.
 // Place cover rendering inside its content.
 // id, title, and authors are required; authors is an array of names or author records.
 // Each document id must be unique within one compilation.
-// Omitting parent_id inherits the current document, if one exists.
-// Use parent_id: auto to declare an independent root.
+// Omitting parent-id inherits the current document, if one exists.
+// Use parent-id: auto to declare an independent root.
 #entry(
   id: "notebook",
   title: [Book],
@@ -84,18 +84,18 @@ API reference: [English](doc/README.api.en.md) · [简体中文](doc/README.api.
 // target, and adds it to the prev/next reading sequence.
 #entry(
   id: "note 1",
-  parent_id: auto,
+  parent-id: auto,
   title: [Note 1],
   authors: ("Alice",),
   date: datetime(year: 2026, month: 10, day: 30),
 )[
   // embed increases the heading offset in PDF and restores the outer document context.
   // For a separate source file, use #embed(include "child.typ").
-  // Semantic parent relationships are declared explicitly with parent_id.
+  // Semantic parent relationships are declared explicitly with parent-id.
   #embed[
     #entry(
       id: "sub note 1",
-      parent_id: "note 1",
+      parent-id: "note 1",
       title: [Sub Note 1],
       authors: ("Alice",),
       date: datetime(year: 2026, month: 10, day: 30, hour: 23, minute: 46, second: 0),
@@ -106,7 +106,7 @@ API reference: [English](doc/README.api.en.md) · [简体中文](doc/README.api.
   // entry can declare and render a document directly, without embed.
   #entry(
     id: "sub note 2",
-    parent_id: "note 1",
+    parent-id: "note 1",
     title: [Sub Note 2],
     authors: ("Alice",),
     date: datetime(year: 2026, month: 10, day: 30, hour: 23, minute: 46, second: 0),
@@ -122,7 +122,7 @@ API reference: [English](doc/README.api.en.md) · [简体中文](doc/README.api.
 // A semantic child can also appear outside an embedded body.
 #entry(
   id: "sub note 3",
-  parent_id: "note 1",
+  parent-id: "note 1",
   title: [Sub Note 3],
   authors: ("Alice",),
   date: datetime(year: 2026, month: 10, day: 30, hour: 23, minute: 46, second: 0),
@@ -155,7 +155,7 @@ API reference: [English](doc/README.api.en.md) · [简体中文](doc/README.api.
 
 #entry(
   id: "note 2",
-  parent_id: auto,
+  parent-id: auto,
   title: [Note 2],
   authors: (alice,),
   date: datetime(year: 2026, month: 10, day: 30, hour: 23, minute: 46, second: 0),
@@ -194,7 +194,7 @@ API reference: [English](doc/README.api.en.md) · [简体中文](doc/README.api.
 // from the document ID; nested ancestors become route directories.
 // In bundle mode, keep page-producing entry calls outside another page's body.
 #embed[
-  #entry(id: "research", parent_id: "home", title: [Research], authors: ())[
+  #entry(id: "research", parent-id: "home", title: [Research], authors: ())[
     = Research questions
     Research notes.
     == Open problems
@@ -204,7 +204,7 @@ API reference: [English](doc/README.api.en.md) · [简体中文](doc/README.api.
   ]
 
   #embed[
-    #entry(id: "review", parent_id: "research", title: [Review], authors: ())[
+    #entry(id: "review", parent-id: "research", title: [Review], authors: ())[
       Literature review.
       // Reuse the research page's body in this page.
       #ssg.ref("research")
@@ -288,10 +288,6 @@ implementation. The cache is available during module initialization.
 ## Contributing
 
 Explore the repository and open a pull request to fix a problem or suggest an improvement.
-
-Run `node tests/run.mjs` to test a copied `@preview/tysty:0.1.0` package with the manifest exclusions applied.
-Run `node tests/docs.mjs` to compile the documentation examples against that package.
-See [tests/README.md](https://github.com/mujiu555/tysty/blob/main/tests/README.md) for API coverage and test targets.
 
 ## License
 
