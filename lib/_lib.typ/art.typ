@@ -1,11 +1,15 @@
-#import "doc.typ": _core_doc, _doc_uuid, current, documents
-#import "types.typ": image
-#import "categories.typ": category
+#import "doc.typ": _core_doc, current, documents
+#import "types.typ": author, category, img
+#import "tag.typ": tag
+#import "util.typ": _match
+
+#let _document-selector(id) = std.label("tysty-document:" + id)
 
 // Declare a document. Most arguments map 1:1 onto `_Core_doc` fields and
 #let meta(
   id: none,
-  parent_id: "index",
+  parent_id: auto,
+  file_path: "(no link (uri))",
   //
   title: none,
   authors: none,
@@ -19,7 +23,7 @@
   license: "apache-v2",
   //
   description: "",
-  cover_image: image.null,
+  cover_image: img.null,
   category: category.null,
   tags: (),
   tlb: (:),
@@ -27,8 +31,8 @@
   context {
     let doc = (_core_doc.new)(
       id: id,
-      parent_id: parent_id,
-      did: _doc_uuid(id),
+      parent_id: if parent_id == auto { id } else { parent_id },
+      file_path: file_path,
 
       title: title,
       authors: authors,
@@ -49,26 +53,38 @@
       tags: tags,
 
       tlb: tlb,
-
-      loc: here(),
     )
-    // Attach the document to every tag it lists
+
+    for v in authors {
+      assert(
+        _match(str, v) or _match(author, v),
+        message: "authors must contain strings or author records",
+      )
+    }
     for t in tags {
-      (t.add-doc)(doc)
+      assert(
+        _match(tag, t),
+        message: "tags must contain tag records",
+      )
+    }
+    for keyword in keywords {
+      assert(
+        type(keyword) == str,
+        message: "keywords must contain strings",
+      )
     }
 
-    // Register under its id, and make it the current document
-    (documents.update)(dc => {
-      dc + ((id): doc)
-    })
+    // Publish the complete record for document queries.
+    [#metadata(doc) <tysty-document>]
+    // A dedicated marker lets duplicate checks query only this document ID.
+    [#metadata(id)#_document-selector(id)]
 
     (current.update)(
       doc,
     )
-    [#metadata(id) <typst-mode-document-id>]
   }
   context {
-    let matches = query(<typst-mode-document-id>).filter(m => m.value == id)
-    assert(matches.len() == 1, message: "ERROR: duplicate document id: `" + id + "`")
+    let matches = query(_document-selector(id))
+    assert(matches.len() <= 1, message: "ERROR: duplicate document id: `" + id + "`")
   }
 }

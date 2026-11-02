@@ -1,11 +1,14 @@
 #import "doc.typ": current
-
 // #embed(include "child.typ") resolves relative paths at the call site.
-#let embed(body) = {
+#let _embed(body, offset: true) = {
   (current.enter)()
   context {
-    set heading(offset: heading.offset + 1)
-    body
+    if offset {
+      set heading(offset: heading.offset + 1)
+      body
+    } else {
+      body
+    }
   }
   (current.leave)()
 }

@@ -3,29 +3,28 @@
 // document; `lookup` turns that label back into a clickable link to the
 // spot. This powers things like an index or cross-references.
 
-#import "uid.typ": namespaces, v3
-
 #import "record.typ": impl_record, record
-#import "state.typ": _mkstate, _state
+#import "enum.typ": enumerator
 
-// Global store of labels: name -> index entry. A fresh `_state` slot is
-// used so it does not collide with the other modules' slots.
-#let _labels = _mkstate(
-  "adf192e3-4b21-4d51-b218-93dbee5b0b15",
-  (:),
-)
-#let _refrecs = _mkstate(
-  "85de9db3-3669-4e67-99a3-4658abe657a9",
-  (:),
-)
+// Namespace labels for selective queries independent of ordinary document labels.
+#let _index-selector(name) = std.label("typst-mode-index:" + name)
+#let _backlink-selector(name) = std.label("typst-mode-backlink:" + name)
 
-// UUID namespace for index labels, mirroring doc.typ / tag.typ.
-#let _ns_index = v3(namespaces.oid, "5eb885ab-9e08-43ba-bb95-8e6178761d88")
-#let _index_uuid(name) = v3(_ns_index, name)
+#let _ctx = enumerator(
+  doc: str,
+  null: record(),
+)
+#let _ctx = (
+  _ctx
+    + (
+      null: (_ctx.null)(),
+    )
+)
 
 #let _backlink = record(
   loc: location,
   content: content,
+  ctx: _ctx,
 )
 
 // An index entry: the label text, the location it points at, and the
@@ -39,7 +38,7 @@
 #let _indexer = impl_record(
   _indexer,
   // Build a link to the recorded location, shown as `content`.
-  lookup: (self, loc, content) => context {
+  lookup: (self, content) => context {
     link(self.loc, content)
   },
 )
@@ -55,36 +54,42 @@
       content: content,
     )
 
-    (_labels.update)(cont => {
-      cont + ((label): index)
-    })
-    [#metadata(label) <typst-mode-index-label>]
+    // The shared marker enumerates entries; the named marker supports targeted
+    // queries without collecting and filtering every index entry.
+    [#metadata(index) <typst-mode-index-label>]
+    [#metadata(index)#_index-selector(label)]
     content
   }
   // Keep validation separate from registration so a failed validation cannot
-  // remove the state update and oscillate between layout passes.
+  // remove the metadata and oscillate between layout passes.
   context {
-    let matches = query(<typst-mode-index-label>).filter(m => m.value == label)
-    assert(matches.len() == 1, message: "ERROR: duplicate label: `" + label + "`")
+    let matches = query(_index-selector(label))
+    assert(matches.len() <= 1, message: "ERROR: duplicate label: `" + label + "`")
   }
 }
 
 // Look up a previously registered label and render a link to it.
-#let lookup(label, content) = context {
+#let _lookup(label, content, doc_id: auto) = context {
   let loc = here()
-  let cont = (_labels.final)().at(label)
+  let matches = query(_index-selector(label))
+  assert(matches.len() > 0, message: "ERROR: unknown label: `" + label + "`")
+  let cont = matches.first().value
 
-  (_refrecs.update)(
-    recs => recs + ((label): recs.at(label, default: ()) + ((_backlink.new)(loc: loc, content: content),)),
+  let backlink = (_backlink.new)(
+    loc: loc,
+    content: content,
+    ctx: if doc_id == auto { _ctx.null } else { (_ctx.doc)(doc_id) },
   )
+  [#metadata(backlink)#_backlink-selector(label)]
 
-  (cont.lookup)(loc, content)
+  (cont.lookup)(content)
 }
 
 #let backlinks(label) = {
-  (_refrecs.final)().at(label, default: ())
+  query(_backlink-selector(label)).map(item => item.value)
 }
 
+// Return index records in document order.
 #let indexers() = {
-  (_labels.final)()
+  query(<typst-mode-index-label>).map(item => item.value)
 }

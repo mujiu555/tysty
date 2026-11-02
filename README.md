@@ -1,4 +1,4 @@
-# typst-mode
+# Tysty
 
 [![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
 [![conventional commit compliant](https://img.shields.io/badge/git%20commit-conventional%20commit-brightgreen.svg?style=flat-square)](https://www.conventionalcommits.org/en/v1.0.0/#specification)
@@ -6,24 +6,24 @@
 
 ## Background
 
+Tysty is a library for organizing linked notes, inspired by Emacs Org-mode. It provides document metadata, tags, cross-references, outlines, and navigation. Render the same source as PDF, HTML, or a static website.
+
 ### Referencing
+
+<!-- Reserved for references to be documented. -->
 
 ### Credit: Code/Library
 
-1. [digestify](https://github.com/ParaN3xus/digestify.git):
-  License: MIT, no NOTICE provided
+<!-- Reserved for code and library acknowledgements to be documented. -->
 
 ## Structure
 
-The whole project is organized in following structure:
+The project is organized as follows:
 
 ```txt
 Root: /                         ; Project root
 +- .git/                        ; git repository
-+- .github/
-|  +- workflows/                ; CI/CD configuration
 +- doc/                         ; documentation & copyright information
-|  +- licenses/                 ; licenses and notice form other libraries
 |  +- LICENSE                   ; copy of the LICENSE
 |  +- LICENSE.apache            ; copy of the original LICENSE
 |  +- README                    ; README for directory `doc`
@@ -33,7 +33,6 @@ Root: /                         ; Project root
 +- lib/                         ; libraries
 |  +- _lib.typ/                 ; source code
 +- .gitignore
-+- .gitmodules
 +- LICENSE
 +- README.md
 +- typst.toml                   ; library spec
@@ -41,59 +40,246 @@ Root: /                         ; Project root
 
 ## Usage
 
+API reference: [English](doc/README.api.en.md) · [简体中文](doc/README.api.zh_cn.md)
+
 ```typst
-#import "/lib/_lib.typ/lib.typ": *
+// Save this example as notebook.typ.
+// Compile with: typst compile --root . notebook.typ
+// Requires Typst 0.15.1 or later.
+#import "@preview/tysty:0.1.0": *
+// Top-level APIs automatically select PDF or HTML at the call site.
+// Explicit pdf.* and html.* APIs remain available.
+// Export this source as HTML with: typst compile --features html notebook.typ notebook.html
 #show: template
 
-#let (root, science, mathematics) = (tag.register)(
-  "computer-science", "mathematics",
-)
-#meta(
-  id: "index",
-  title: [My notes],
-  authors: ([Author name],),
-  tags: (science, mathematics),
-)
-#mkcover()
-#mkheading()
+// Set the prefix for document file_path links.
+#set-base("file:///path/to/project/")
 
-#lookup("definition", [Jump to the definition])
-#mkindex("definition", [A definition])
-#embed(include "child.typ")
-#render-index()
+// Register a namespace and its nested tags.
+#let topics = (tag.register)("notebook", (
+  science: (physics: (:),),
+))
+#let physics = topics.children.science.children.physics.tag
+// Attach a tag to a document by adding tags: (physics,) to its entry call.
+
+// Declare and render a document with entry.
+// Place cover rendering inside its content.
+// id, title, and authors are required; authors is an array of names or author records.
+// Each document id must be unique within one compilation.
+// Omitting parent_id inherits the current document, if one exists.
+// Use parent_id: auto to declare an independent root.
+#entry(
+  id: "notebook",
+  title: [Book],
+  authors: ("Alice",),
+  date: datetime(year: 2026, month: 10, day: 30),
+  tags: (physics,),
+)[
+  #mkcover()
+  // Automatic outline: headings in PDF/single HTML, document routes in bundles.
+  #mkoutline()
+]
+
+// entry renders a heading and body, registers the document as a reference
+// target, and adds it to the prev/next reading sequence.
+#entry(
+  id: "note 1",
+  parent_id: auto,
+  title: [Note 1],
+  authors: ("Alice",),
+  date: datetime(year: 2026, month: 10, day: 30),
+)[
+  // embed increases the heading offset in PDF and restores the outer document context.
+  // For a separate source file, use #embed(include "child.typ").
+  // Semantic parent relationships are declared explicitly with parent_id.
+  #embed[
+    #entry(
+      id: "sub note 1",
+      parent_id: "note 1",
+      title: [Sub Note 1],
+      authors: ("Alice",),
+      date: datetime(year: 2026, month: 10, day: 30, hour: 23, minute: 46, second: 0),
+    )[
+      sub note 1 content
+    ]
+  ]
+  // entry can declare and render a document directly, without embed.
+  #entry(
+    id: "sub note 2",
+    parent_id: "note 1",
+    title: [Sub Note 2],
+    authors: ("Alice",),
+    date: datetime(year: 2026, month: 10, day: 30, hour: 23, minute: 46, second: 0),
+  )[
+    sub note 2 content
+    #mkindex("label")[content shown]
+  ]
+
+  #render-children[Children]
+  // List the direct children of the current document.
+]
+
+// A semantic child can also appear outside an embedded body.
+#entry(
+  id: "sub note 3",
+  parent_id: "note 1",
+  title: [Sub Note 3],
+  authors: ("Alice",),
+  date: datetime(year: 2026, month: 10, day: 30, hour: 23, minute: 46, second: 0),
+)[
+  #mkcover()
+  sub note 3 content
+  #lookup("label")[reference]
+]
+
+#let alice = (author.new)(
+  name: "Alice",
+  home: "https://example.com/",
+  email: "no.reply@github.com",
+  affiliation: "",
+  orcid: "",
+)
+
+#let topics2 = (tag.register)(
+  // register tag namespace
+  "topics:root",
+  (
+  // two sub tag
+    index: (:),
+    about: (:),
+  ),
+)
+
+#let index = topics2.children.index.tag
+#let about = topics2.children.about.tag
+
+#entry(
+  id: "note 2",
+  parent_id: auto,
+  title: [Note 2],
+  authors: (alice,),
+  date: datetime(year: 2026, month: 10, day: 30, hour: 23, minute: 46, second: 0),
+  // you can define category for a document
+  category: (category.book)(
+    publisher: "github",
+    isbn: "(none)",
+    edition: "0.1.0",
+  ),
+  tags: (index,),
+)[
+  Create and render a new document
+]
+
+#render-tags(topics)
+
+// Reference a registered target with #lookup("sub note 1", [Sub Note 1]).
+// In a context block, backlinks("sub note 1") returns its recorded references.
+// render-children([Child notes]) lists children of the current document.
+// render-tags(topics) renders the registered tag tree and its rendered notes.
+// These views resolve registered targets even when they appear later in the source.
 ```
 
-Each included note declares its own `meta(...)` and calls `mkheading()`.
-`embed` increases heading levels and restores the enclosing document afterward.
-Paths in `include` resolve relative to the calling file. Use
-`mkheading(new-page: false)` to keep a note on the current page.
+### Static site generation
 
-`mkheading` registers the document ID as a global label, shows the title and
-slug, authors, date, tags, and parent link. `template` provides the A4 layout
-and previous/up/next navigation. `mkcover` renders an optional cover image
-and abstract. `render-index(show-backlinks: false)` hides backlink lists.
-Navigation links do not count as backlinks; explicit `lookup` calls do.
+```typst
+// Save as site.typ. Requires Typst 0.15.1 or later.
+// Compile with: typst compile --root . --features html,bundle --format bundle site.typ output
+#import "@preview/tysty:0.1.0": *
+#show: template
 
-When migrating from Wishful-Thinking:
+// Declare and render the root page explicitly, just like the child pages below.
+#entry(id: "home", title: [Notebook], authors: ())[Entry page]
 
-- Put old category names into regular `tag` objects and pass them in `tags`.
-  The publication `category` enum remains separate and optional.
-- Use `authors: ([Author name],)` even for one author; a scalar is rejected.
-- Replace `mkheader()` with `mkheading()`.
-- Use `mkindex(label, content)` and `lookup(label, content)` with globally
-  unique labels. There is no automatic document prefix or old `index` API.
-- Use `embed(include "path.typ")` instead of passing a filename string.
-- Read `(current.get)()`, `(documents.final)()`, and `indexers()` directly.
-- Extra document data lives in `tlb`; `tlb: (taxon: "theorem")` adds a taxon
-  prefix above the note heading. Abstract and description are strings.
+// An embed can declare and emit its own child page. The route is computed
+// from the document ID; nested ancestors become route directories.
+// In bundle mode, keep page-producing entry calls outside another page's body.
+#embed[
+  #entry(id: "research", parent_id: "home", title: [Research], authors: ())[
+    = Research questions
+    Research notes.
+    == Open problems
+    More to explore.
+    // The automatic mkoutline selects the route-aware document tree in bundles.
+    #mkoutline()
+  ]
 
-Run the rendering integration checks with `node tests/render/check.mjs`.
+  #embed[
+    #entry(id: "review", parent_id: "research", title: [Review], authors: ())[
+      Literature review.
+      // Reuse the research page's body in this page.
+      #ssg.ref("research")
+    ]
+  ]
+]
+
+// Outputs: index.html, research/index.html,
+// research/review/index.html, and tysty.css.
+// entry uses each document's metadata and parent chain to determine its route.
+// Navigation and breadcrumbs are in the top bar; section links appear in the right sidebar.
+// mkoutline() uses Typst's outline for PDF/single HTML and SSG routes for bundles.
+// Keep page-producing entry calls outside another page's entry body.
+```
+
+### Output previews
+
+#### Static site generation
+
+The generated site includes page navigation, breadcrumbs, section outlines, and reusable page content.
+
+| Home | Research | Review with reused research content |
+| --- | --- | --- |
+| ![SSG home page](doc/imgs/Screenshot%20from%202026-11-02%2011-41-26.png) | ![SSG research page with document tree and section outline](doc/imgs/Screenshot%20from%202026-11-02%2011-41-36.png) | ![SSG review page reusing the research page body](doc/imgs/Screenshot%20from%202026-11-02%2011-41-44.png) |
+
+#### PDF
+
+Document headings, metadata, navigation, nested notes, and tag listings in the PDF output.
+
+| Book | Note heading |
+| --- | --- |
+| ![PDF book heading and metadata](doc/imgs/Screenshot%20from%202026-11-02%2011-44-57.png) | ![PDF note heading](doc/imgs/Screenshot%20from%202026-11-02%2011-45-04.png) |
+
+| Note navigation | Nested note |
+| --- | --- |
+| ![PDF note with previous and next navigation](doc/imgs/Screenshot%20from%202026-11-02%2011-45-11.png) | ![PDF nested note with breadcrumbs and back link](doc/imgs/Screenshot%20from%202026-11-02%2011-45-21.png) |
+
+![PDF publication metadata and hierarchical tag listing](doc/imgs/Screenshot%20from%202026-11-02%2011-45-37.png)
+
+#### Single-file HTML
+
+The same notebook rendered as HTML, with a cover, automatic outline, and document navigation.
+
+![Single-file HTML notebook with cover, contents, and nested notes](doc/imgs/Screenshot%20from%202026-11-02%2011-46-37.png)
+
+### UID identifiers
+
+`uid(namespace, name)` uses pure Typst FNV-1a 32 with native integer bit
+operations. These identifiers are **non-standard UUIDs that borrow the UUID
+container**, not UUID v5. The input is the namespace's 16 bytes followed by the
+name's UTF-8 bytes (or raw bytes). Names are preserved without normalization.
+The initial hash is 2166136261; each byte is XORed into it, then multiplied by
+16777619 modulo 2^32.
+
+The result is `hhhhhhhh-0000-8000-8000-000000000000`, where `hhhhhhhh` is the
+lowercase, zero-padded 32-bit hash. The remaining fields are fixed formatting;
+they add no entropy. The effective hash space is only 32 bits, so collisions are
+possible; this is not a cryptographic hash or a uniqueness guarantee. Namespace
+strings remain case-insensitive, and 16-byte namespaces are also accepted.
+Existing UUID v5 values and all derived IDs change with this algorithm.
+
+Built-in identifiers use the precomputed FNV-1a 32 table in
+`lib/_lib.typ/uid.builtin.json`. Cache keys include the complete namespace and
+name; inputs absent from the table are computed with the same pure Typst
+implementation. The cache is available during module initialization.
 
 ## Plans
 
+- Enhanced tables, calculations, and cell management
+- Calendar generation and TODO management
+- Ledger management and automatic billing generation
+
 ## Related Efforts
 
-1. [Typsy](https://github.com/patrick-kidger/typsy)
+<!-- Reserved for related projects to be documented. -->
 
 ## Maintainers
 
@@ -101,9 +287,12 @@ Run the rendering integration checks with `node tests/render/check.mjs`.
 
 ## Contributing
 
-You may pull all repository and walk through any part you interested in.
-Make Pr if you have found any problem or have method to improve those notes.
+Explore the repository and open a pull request to fix a problem or suggest an improvement.
+
+Run `node tests/run.mjs` to test a copied `@preview/tysty:0.1.0` package with the manifest exclusions applied.
+Run `node tests/docs.mjs` to compile the documentation examples against that package.
+See [tests/README.md](https://github.com/mujiu555/tysty/blob/main/tests/README.md) for API coverage and test targets.
 
 ## License
 
-Apache License ver. 2.
+[Apache License 2.0](LICENSE).
