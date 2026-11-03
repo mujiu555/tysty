@@ -63,19 +63,19 @@ API reference: [English](doc/README.api.en.md) · [简体中文](doc/README.api.
 // Attach a tag to a document by adding tags: (physics,) to its entry call.
 
 // Declare and render a document with entry.
-// Place cover rendering inside its content.
+// use cover to render cover instead of heading
 // id, title, and authors are required; authors is an array of names or author records.
 // Each document id must be unique within one compilation.
 // Omitting parent-id inherits the current document, if one exists.
 // Use parent-id: auto to declare an independent root.
 #entry(
   id: "notebook",
+  cover: true,
   title: [Book],
   authors: ("Alice",),
   date: datetime(year: 2026, month: 10, day: 30),
   tags: (physics,),
 )[
-  #mkcover()
   // Automatic outline: headings in PDF/single HTML, document routes in bundles.
   #mkoutline()
 ]
