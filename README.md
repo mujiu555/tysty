@@ -127,7 +127,6 @@ API reference: [English](doc/README.api.en.md) · [简体中文](doc/README.api.
   authors: ("Alice",),
   date: datetime(year: 2026, month: 10, day: 30, hour: 23, minute: 46, second: 0),
 )[
-  #mkcover()
   sub note 3 content
   #lookup("label")[reference]
 ]
@@ -228,27 +227,25 @@ The generated site includes page navigation, breadcrumbs, section outlines, and 
 
 | Home | Research | Review with reused research content |
 | --- | --- | --- |
-| ![SSG home page](doc/imgs/Screenshot%20from%202026-11-02%2011-41-26.png) | ![SSG research page with document tree and section outline](doc/imgs/Screenshot%20from%202026-11-02%2011-41-36.png) | ![SSG review page reusing the research page body](doc/imgs/Screenshot%20from%202026-11-02%2011-41-44.png) |
+| ![SSG home page](doc/imgs/Screenshot%20from%202026-11-03%2010-00-10.png) | ![SSG research page with document tree and section outline](doc/imgs/Screenshot%20from%202026-11-03%2010-00-15.png) | ![SSG review page reusing the research page body](doc/imgs/Screenshot%20from%202026-11-03%2010-00-20.png) |
 
 #### PDF
 
-Document headings, metadata, navigation, nested notes, and tag listings in the PDF output.
+The PDF output includes a cover, an automatic contents page, document headings, and nested notes.
 
-| Book | Note heading |
+| Cover | Contents |
 | --- | --- |
-| ![PDF book heading and metadata](doc/imgs/Screenshot%20from%202026-11-02%2011-44-57.png) | ![PDF note heading](doc/imgs/Screenshot%20from%202026-11-02%2011-45-04.png) |
+| ![PDF book cover](doc/imgs/Screenshot%20from%202026-11-03%2009-58-07.png) | ![PDF contents page](doc/imgs/Screenshot%20from%202026-11-03%2009-58-21.png) |
 
-| Note navigation | Nested note |
+| Note | Nested note |
 | --- | --- |
-| ![PDF note with previous and next navigation](doc/imgs/Screenshot%20from%202026-11-02%2011-45-11.png) | ![PDF nested note with breadcrumbs and back link](doc/imgs/Screenshot%20from%202026-11-02%2011-45-21.png) |
-
-![PDF publication metadata and hierarchical tag listing](doc/imgs/Screenshot%20from%202026-11-02%2011-45-37.png)
+| ![PDF note heading and metadata](doc/imgs/Screenshot%20from%202026-11-03%2009-58-36.png) | ![PDF nested note and navigation](doc/imgs/Screenshot%20from%202026-11-03%2009-58-47.png) |
 
 #### Single-file HTML
 
 The same notebook rendered as HTML, with a cover, automatic outline, and document navigation.
 
-![Single-file HTML notebook with cover, contents, and nested notes](doc/imgs/Screenshot%20from%202026-11-02%2011-46-37.png)
+![Single-file HTML notebook with cover, contents, and nested notes](doc/imgs/Screenshot%20from%202026-11-03%2009-59-24.png)
 
 ### UID identifiers
 
