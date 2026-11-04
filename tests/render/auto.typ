@@ -6,8 +6,7 @@
 #mkindex("standalone", [Independent target])
 #lookup("standalone", [Independent reference])
 #meta(id: "root", title: [Auto root], authors: ())
-#mkcover()
-#mkdoc[
+#mkdoc(cover: true)[
   #mkoutline()
   #lookup("child", [Forward reference])
   #render-children([Children])

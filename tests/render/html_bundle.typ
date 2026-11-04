@@ -7,8 +7,7 @@
 
 #html.page("index.html", title: "Notebook & notes")[
   #meta(id: "root", title: [Notebook & notes], authors: ("Alice",), tags: (science,), cover_image: (img.data)(png))
-  #html.mkcover()
-  #html.mkdoc[
+  #html.mkdoc(cover: true)[
     #html.lookup("child", [Read the child])
     #html.render-children([Children])
     #html.render-tags(tree)

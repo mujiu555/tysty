@@ -5,9 +5,10 @@ Use Node.js 24 or later and Typst 0.15.1 or later.
 ```sh
 node tests/run.mjs
 node tests/docs.mjs
+node tests/numbering.mjs
 ```
 
-Both commands copy tracked project files into a temporary
+All three commands copy tracked project files into a temporary
 `packages/preview/tysty/0.1.0` directory, applying the manifest's `exclude`
 patterns. The copy includes current working-tree edits to tracked files.
 New package files must be tracked before they enter the copy. No package is
@@ -59,8 +60,8 @@ directory for inspection.
 
 ## Documentation checks
 
-`node tests/docs.mjs` extracts all Typst code blocks from the README and both
-API references. Complete examples compile as written against the copied preview
+`node tests/docs.mjs` extracts all Typst code blocks from the project README, the English and Chinese
+publication READMEs, and both API references. Complete examples compile as written against the copied preview
 package. Snippets receive the package import and template setup. The command
 checks local documentation links, PDF/HTML output, generated bundle routes,
 stylesheet paths, and reused research-page content. Documentation remains in
@@ -81,3 +82,14 @@ Warm up once, then compare medians and ranges from at least five independent
 runs without competing builds. Trace collection adds overhead; use ordinary
 compilations for headline timings. Record the compiler version, revision,
 commands, and environment with results.
+
+## Numbering checks
+
+`node tests/numbering.mjs` compiles numbering cases as PDF, HTML, bundle, SVG,
+and PNG. It checks rules at the start and middle of an entry body (including a cover entry), an outer
+rule, disabled numbering, function patterns, inherited offsets, heading
+options, nested scopes, a heading show-set rule, reused page bodies, and mixed
+HTML/PDF bundles. Number text and heading ranks are inspected in HTML; output
+files and compiler diagnostics are checked for every target. Layout convergence
+warnings fail the run. Each compilation writes a timing trace; `results.json`
+records output paths, timings, and diagnostics in the reported temporary folder.

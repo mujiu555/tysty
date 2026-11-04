@@ -3,8 +3,7 @@
 #show: pdf.template
 #let tree = (tag.register)("topics", (science: (:),))
 #meta(id: "root", title: [Root], authors: ())
-#pdf.mkcover()
-#pdf.mkdoc[
+#pdf.mkdoc(cover: true)[
   #pdf.lookup("child", [Child reference])
   #pdf.render-children([Children])
   #pdf.embed[

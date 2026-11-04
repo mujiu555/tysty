@@ -12,12 +12,13 @@ const { packages, destination, files } = stagePackage(root, output);
 console.log(`Copied package: ${destination}`);
 assert(!files.some(file => file.startsWith('doc/') || file.startsWith('tests/')));
 let passed = 0;
-for (const file of ['README.md', 'doc/README.api.en.md', 'doc/README.api.zh_cn.md']) {
+for (const file of ['README.md', 'doc/README.en.md', 'doc/README.zh_cn.md', 'doc/README.api.en.md', 'doc/README.api.zh_cn.md']) {
   const markdown = readFileSync(join(root, file), 'utf8');
   for (const match of markdown.matchAll(/!?\[[^\]]*\]\(([^)]+)\)/g)) {
     const target = match[1];
     if (/^(https?:|#)/.test(target)) continue;
-    assert(existsSync(resolve(root, dirname(file), decodeURIComponent(target.split('#')[0]))), `${file}: missing ${target}`);
+    const base = file === 'doc/README.en.md' || file === 'doc/README.zh_cn.md' ? root : resolve(root, dirname(file));
+    assert(existsSync(resolve(base, decodeURIComponent(target.split('#')[0]))), `${file}: missing ${target}`);
   }
   for (const [index, block] of [...markdown.matchAll(/```typst\n([\s\S]*?)```/g)].entries()) {
     let source = block[1];
@@ -30,6 +31,8 @@ for (const file of ['README.md', 'doc/README.api.en.md', 'doc/README.api.zh_cn.m
     for (const format of formats) {
       const target = input + '.' + format;
       const result = spawnSync('typst', ['compile', '--root', output, '--package-path', packages, '--features', 'html,bundle', '--format', format, input, target], { encoding: 'utf8', timeout: 60000 });
+      assert(!result.error, `${file} example ${index} (${format}): ${result.error}`);
+      assert(!/converg|layout did not/i.test(result.stderr ?? ''), `${file} example ${index}: ${result.stderr}`);
       assert.equal(result.status, 0, `${file} example ${index} (${format}): ${result.stderr || result.error}`);
       if (format === 'pdf') assert.equal(readFileSync(target).subarray(0, 5).toString(), '%PDF-');
       if (format === 'html') assert(readFileSync(target, 'utf8').includes('<html'));
@@ -48,7 +51,7 @@ for (const file of ['README.md', 'doc/README.api.en.md', 'doc/README.api.zh_cn.m
         }
         inspect(target);
         assert(pages.length > 0, 'Bundle must contain HTML pages');
-        if (file === 'README.md') {
+        if (file === 'README.md' || file === 'doc/README.en.md') {
           for (const route of ['index.html', 'research/index.html', 'research/review/index.html', 'tysty.css']) assert(existsSync(join(target, route)), `Missing ${route}`);
           assert(readFileSync(join(target, 'research/review/index.html'), 'utf8').includes('Research questions'));
         }

@@ -89,7 +89,7 @@ for (const input of files(join(root, 'tests')).sort()) {
     if (result.error) throw result.error;
     let ok = expected
       ? result.status !== 0 && diagnostic.includes(expected) && !diagnostic.includes('TEST FAILURE:')
-      : result.status === 0;
+      : result.status === 0 && !/converg|layout did not/i.test(diagnostic);
     let outputError;
     if (ok && !expected) {
       try { verifyOutput(path, format, destination); }
