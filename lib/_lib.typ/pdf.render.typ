@@ -56,9 +56,8 @@
 }
 
 
-// A separate cover does not register the heading label a second time.
-#let mkcover() = context {
-  let doc = (current.get)()
+// Render using metadata already resolved by the caller.
+#let _cover(doc) = {
   assert("id" in doc, message: "Call meta before mkcover")
   pagebreak(weak: true)
   mkindex(doc.id, align(center)[
@@ -88,6 +87,8 @@
   pagebreak(weak: true)
 }
 
+#let mkcover() = context { _cover((current.get)()) }
+
 // Render the current note and register its id as a global index label.
 #let mkdoc(new-page: true, cover: false, content) = context {
   let doc = (current.get)()
@@ -96,7 +97,7 @@
   if new-page { pagebreak(weak: true) }
   // Register outside the heading body: outlines replay that body.
   if cover {
-    mkcover()
+    _cover(doc)
   } else {
     mkindex(doc.id, block(below: 0.3em, heading(
       depth: 1,
