@@ -57,3 +57,22 @@
   meta(..fields) + mkdoc(cover: cover, content)
 }
 
+// #show: num.with(pattern: "1.")...
+#let num(body, pattern: none, ..rest) = context {
+  let base-level = heading.offset + 1
+
+  set heading(
+    offset: base-level,
+    numbering: if pattern == none {
+      none
+    } else {
+      (..nums) => numbering(
+        pattern,
+        ..nums.pos().slice(base-level),
+      )
+    },
+    ..rest,
+  )
+
+  body
+}
