@@ -132,7 +132,11 @@ API reference: [English](doc/README.api.en.md) · [简体中文](doc/README.api.
   ),
   tags: (index,),
 )[
-  Create and render a new document
+  #show: num.with(pattern: "1.")
+  = Overview
+  Create and render a new document.
+  == Details
+  Section numbers omit the surrounding document heading.
 ]
 
 #render-tags(topics)
@@ -160,6 +164,8 @@ API reference: [English](doc/README.api.en.md) · [简体中文](doc/README.api.
 // In bundle mode, keep page-producing entry calls outside another page's body.
 #embed[
   #entry(id: "research", parent-id: "home", title: [Research], authors: ())[
+    // Number sections within this page, including when this is its first content.
+    #show: num.with(pattern: "1.")
     = Research questions
     Research notes.
     == Open problems
@@ -212,6 +218,8 @@ The PDF output includes a cover, an automatic contents page, document headings, 
 The same notebook rendered as HTML, with a cover, automatic outline, and document navigation.
 
 ![Single-file HTML notebook with cover, contents, and nested notes](doc/imgs/Screenshot%20from%202026-11-03%2009-59-24.png)
+
+### FAQ
 
 ## Maintainers
 

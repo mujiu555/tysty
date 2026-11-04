@@ -51,6 +51,7 @@ Use these helpers in shared PDF, HTML, and bundle sources. They choose the appro
 | --- | --- |
 | `template(body, ..options)` | Use with `#show: template`; selects PDF, single HTML, or bundle wrapper. Options go to the selected wrapper. |
 | `embed(body, offset: …)` | Saves/restores the current document; heading offset defaults to `true` in PDF and `false` in HTML/bundles. |
+| `num(body, pattern: none, ..rest)` | Adjusts body-heading depth and numbering; apply inside the entry body. |
 | `mkcover()` | Renders the current document's cover; use after `meta()` when rendering it explicitly. |
 | `mkoutline(..args)` | Automatically renders a heading outline for PDF/single HTML, or a document tree with page links for bundles (including calls inside bundle pages). |
 | `render-children(title)` | Lists directly related children that have rendered reference targets. |
@@ -75,6 +76,38 @@ Use these helpers in shared PDF, HTML, and bundle sources. They choose the appro
 ```
 
 Use `#embed(include "child.typ")` for a separate source file. For bundles, keep page-producing `entry` calls outside another page's body, as shown in the README's static-site example.
+
+### Section numbering with num
+
+`num(body, pattern: none, ..rest)` scopes heading settings to its body. Use it as a show rule **inside an entry's content**, before the headings to be numbered:
+
+```typst
+#import "@preview/tysty:0.1.0": *
+#show: template
+#entry(id: "numbered", title: [Numbered note], authors: ())[
+  #show: num.with(pattern: "1.")
+  = Introduction
+  First section.
+  == Details
+  A subsection.
+  = Conclusion
+  Last section.
+]
+```
+
+The document title keeps its existing presentation. The body headings are numbered `1.`, `1.1.`, and `2.`. The same placement works for PDF, single HTML, SVG/PNG, and an SSG page body. In bundles, declare each page outside other pages' bodies as usual.
+
+| Argument | Meaning |
+| --- | --- |
+| `body` | Content whose heading settings are changed; a show rule supplies this automatically. |
+| `pattern` | A Typst numbering string or function; `none` (the default) disables numbering. |
+| `..rest` | Additional `heading` set-rule options, such as `outlined: false`. `num` supplies `offset` and `numbering`; do not pass those options again. |
+
+`num` increases the inherited heading offset by one and removes that many leading counter components from the displayed number. It respects offsets introduced by `embed` and can wrap a smaller block as `#num(pattern: "a.")[...]`.
+
+Keep the rule inside the entry body: wrapping `entry` itself also changes and numbers its document heading, shifting section numbers. Place the rule before the headings it should affect; adding text before it is unnecessary. `num` does not reset the heading counter, so numbering can continue across entries or bundle pages. Use Typst's counter API explicitly if you need a restart.
+
+Prefer this scoped rule to a separate `show heading: set heading(...)` rule when numbering Tysty sections: `num` handles the inherited offset and number prefix together.
 
 ## References and queries
 

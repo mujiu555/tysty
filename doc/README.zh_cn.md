@@ -19,6 +19,8 @@ API 参考：[English](doc/README.api.en.md) · [简体中文](doc/README.api.zh
 
 #embed[
   #entry(id: "first", parent-id: "home", title: [第一篇], authors: ("Alice",))[
+    // 在 entry 正文内应用 num，自动编号章节标题。
+    #show: num.with(pattern: "1.")
     = 正文
     #mkindex("term")[术语]
     参见 #lookup("term")[术语]。
@@ -46,6 +48,7 @@ API 参考：[English](doc/README.api.en.md) · [简体中文](doc/README.api.zh
 
 #embed[
   #entry(id: "research", parent-id: "home", title: [研究], authors: ())[
+    #show: num.with(pattern: "1.")
     = 研究问题
     #mkoutline()
   ]
@@ -56,9 +59,10 @@ API 参考：[English](doc/README.api.en.md) · [简体中文](doc/README.api.zh
 
 ## 其他功能
 
+- `num(body, pattern: none, ..rest)` 调整正文标题层级并按指定模式编号；在 `entry` 正文内使用 `#show: num.with(pattern: "1.")`。
 - `set-base(prefix)` 设置文档 `file-path` 链接的前缀。
 - `ssg.ref(id)` 在另一个已生成页面中复用指定页面的正文。
 - `mkcover()` 可在通过 `meta()` 声明文档后单独渲染封面。
 - `uid(namespace, name)` 使用纯 Typst 的 32 位 FNV-1a 散列，格式类似 UUID，但不是标准 UUID v5；有效散列空间只有 32 位，可能发生碰撞。
 
-完整的字段、类型、显式渲染器和静态网站 API 请参阅[中文 API 参考](README.api.zh_cn.md)。
+完整的字段、类型、显式渲染器和静态网站 API 请参阅[中文 API 参考](doc/README.api.zh_cn.md)。

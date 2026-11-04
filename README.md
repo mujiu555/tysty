@@ -166,7 +166,12 @@ API reference: [English](doc/README.api.en.md) · [简体中文](doc/README.api.
   ),
   tags: (index,),
 )[
-  Create and render a new document
+  // Apply num inside the entry body to number its section headings.
+  #show: num.with(pattern: "1.")
+  = Overview
+  Create and render a new document.
+  == Details
+  Section numbers omit the surrounding document heading.
 ]
 
 #render-tags(topics)
@@ -194,6 +199,8 @@ API reference: [English](doc/README.api.en.md) · [简体中文](doc/README.api.
 // In bundle mode, keep page-producing entry calls outside another page's body.
 #embed[
   #entry(id: "research", parent-id: "home", title: [Research], authors: ())[
+    // Number sections within this page, including when this is its first content.
+    #show: num.with(pattern: "1.")
     = Research questions
     Research notes.
     == Open problems

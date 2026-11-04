@@ -53,6 +53,7 @@
 | --- | --- |
 | `template(body, ..options)` | 通过 `#show: template` 使用，选择 PDF、单文件 HTML 或 bundle 包装器，选项传递给对应包装器。 |
 | `embed(body, offset: …)` | 保存并恢复当前文档；PDF 默认增加标题层级，HTML 和 bundle 默认不增加。 |
+| `num(body, pattern: none, ..rest)` | 调整正文标题层级与编号；在 entry 正文内应用。 |
 | `mkcover()` | 渲染当前文档封面；单独渲染时可在 `meta()` 后使用。 |
 | `mkoutline(..args)` | PDF 和单文件 HTML 自动生成标题目录；bundle 自动生成带页面链接的文档树，包括在 bundle 页面内调用时。 |
 | `render-children(title)` | 列出具有已渲染引用目标的直接子文档。 |
@@ -77,6 +78,38 @@
 ```
 
 单独源文件可使用 `#embed(include "child.typ")`。生成 bundle 时，应将创建页面的 `entry` 调用放在其他页面正文之外，参见 README 中的静态站点示例。
+
+### 使用 num 为章节编号
+
+`num(body, pattern: none, ..rest)` 在正文范围内设置标题样式。请将 show 规则放在 **entry 的正文内**，位于需要编号的标题之前：
+
+```typst
+#import "@preview/tysty:0.1.0": *
+#show: template
+#entry(id: "numbered", title: [带编号的笔记], authors: ())[
+  #show: num.with(pattern: "1.")
+  = 引言
+  第一节。
+  == 详细说明
+  一个小节。
+  = 结论
+  最后一节。
+]
+```
+
+文档标题保持原有样式，正文标题依次显示 `1.`、`1.1.` 和 `2.`。同样的放置方式适用于 PDF、单文件 HTML、SVG/PNG 和 SSG 页面的正文。生成 bundle 时，仍应将创建页面的 entry 放在其他页面的正文之外。
+
+| 参数 | 含义 |
+| --- | --- |
+| `body` | 需要设置标题样式的内容；作为 show 规则时自动传入。 |
+| `pattern` | Typst 编号字符串或函数；默认值 `none` 表示不显示编号。 |
+| `..rest` | 其他 heading set 规则选项，例如 `outlined: false`。`num` 已设置 `offset` 和 `numbering`，请勿重复传入。 |
+
+`num` 在继承的标题偏移上增加一级，并在显示编号时移除相应数量的前导计数组件。它保留 `embed` 引入的偏移，也可用 `#num(pattern: "a.")[...]` 包裹较小的内容块。
+
+请将规则放在 entry 正文内；若用它包裹 entry 本身，文档标题也会被修改并编号，导致章节编号偏移。规则应放在需要影响的标题之前，无需先添加一段文字。`num` 不重置标题计数器，因此编号可能跨 entry 或 bundle 页面继续。如需重新开始，请显式使用 Typst 的计数器 API。
+
+为 Tysty 章节编号时，推荐使用此局部规则；它会同时处理继承的标题偏移与编号前缀，无需另写 `show heading: set heading(...)` 规则。
 
 ## 引用与查询
 
