@@ -61,6 +61,7 @@
 #let num(body, pattern: none, ..rest) = context {
   let base-level = heading.offset + 1
 
+  counter(heading).update(0)
   set heading(
     offset: base-level,
     numbering: if pattern == none {
