@@ -126,9 +126,7 @@
   block(width: 100%, link(loc, doc.title + h(0.5em) + box(width: 1fr, repeat[.]) + h(0.5em) + page-label))
 }
 
-#let render-children(
-  title,
-) = context {
+#let render-children() = context {
   let doc = (current.get)()
   let docs = documents()
   let entries = indexers()
@@ -139,8 +137,6 @@
   )
 
   if children.len() > 0 {
-    heading(level: 2, outlined: false, title)
-
     for child in children {
       _document-row(child, entries.find(index => index.label == child.id).loc)
     }

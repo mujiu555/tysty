@@ -108,7 +108,7 @@
   }
 }
 
-#let render-children(title) = context {
+#let render-children() = context {
   let doc = (current.get)()
   let entries = indexers()
   let ids = entities()
@@ -117,7 +117,6 @@
   ))
   if children.len() > 0 {
     _element("section", "tysty-children", [
-      #heading(level: 2, outlined: false, title)
       #list(..children.map(d => link(entries.find(index => index.label == d.id).loc, d.title)))
     ])
   }
