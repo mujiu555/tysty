@@ -14,7 +14,7 @@
 #meta(id: "home", title: [Home], authors: ())
 #ssg.mkdoc[Home page.]
 #ssg.embed[
-  #meta(id: "research", parent_id: "home", title: [Research], authors: ())
+  #meta(id: "research", parent-id: "home", title: [Research], authors: ())
   #ssg.mkdoc[
     = Research questions
     Research notes.
@@ -25,12 +25,12 @@
     #mkoutline()
   ]
   #ssg.embed[
-    #meta(id: "review", parent_id: "research", title: [Literature review], authors: ())
+    #meta(id: "review", parent-id: "research", title: [Literature review], authors: ())
     #ssg.mkdoc[Review content.]
   ]
 ]
 #context {
   assert.eq((current.get)().id, "home")
   assert.eq(ssg.entities(), ("home", "research", "review"))
-  assert.eq(html.documents().find(doc => doc.id == "review").parent_id, "research")
+  assert.eq(html.documents().find(doc => doc.id == "review").parent-id, "research")
 }

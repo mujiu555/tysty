@@ -1,6 +1,6 @@
 // Consumer contract: every supported top-level entry is imported from the package.
-#import "@preview/tysty:0.1.0": meta, backlinks, indexers, mkindex, tag, author, category, img, current, pdf, html, ssg, embed, entry, lookup, mkcover, mkoutline, render-children, render-tags, set-base, template
-#for fn in (meta, backlinks, indexers, mkindex, embed, entry, lookup, mkcover, mkoutline, render-children, render-tags, set-base, template) {
+#import "@preview/tysty:0.1.0": meta, backlinks, indexers, mkindex, tag, author, category, img, current, pdf, html, ssg, embed, entry, lookup, mkcover, mkdoc, mkoutline, num, render-children, render-tags, set-base, template
+#for fn in (meta, backlinks, indexers, mkindex, embed, entry, lookup, mkcover, mkdoc, mkoutline, num, render-children, render-tags, set-base, template) {
   assert.eq(type(fn), function)
 }
 #for renderer in (pdf, html) {

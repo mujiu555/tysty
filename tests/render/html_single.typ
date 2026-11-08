@@ -6,7 +6,7 @@
   #html.lookup("later", [Forward reference])
   #html.render-children([Children])
 ]
-#meta(id: "later", parent_id: "root", title: [Later], authors: ())
+#meta(id: "later", parent-id: "root", title: [Later], authors: ())
 #html.mkdoc[Later content.]
 #html.embed[
   #meta(id: "embedded", title: [Embedded], authors: ())

@@ -46,14 +46,34 @@
   }
 }
 
-#let entry(..args, content) = context {
+#let entry(..args, cover: false, content) = context {
   let fields = arguments.named(args)
-  if not ("parent_id" in fields) {
+  if not ("parent-id" in fields) {
     let parent = (current.get)().at("id", default: auto)
     if parent != auto {
-      fields.insert("parent_id", parent)
+      fields.insert("parent-id", parent)
     }
   }
-  meta(..fields) + mkdoc(content)
+  meta(..fields) + mkdoc(cover: cover, content)
 }
 
+// #show: num.with(pattern: "1.")...
+#let num(body, pattern: none, ..rest) = context {
+  let base-level = heading.offset + 1
+
+  counter(heading).update(0)
+  set heading(
+    offset: base-level,
+    numbering: if pattern == none {
+      none
+    } else {
+      (..nums) => numbering(
+        pattern,
+        ..nums.pos().slice(base-level),
+      )
+    },
+    ..rest,
+  )
+
+  body
+}

@@ -9,7 +9,7 @@
   #ssg.mkoutline()
 ]
 #ssg.embed[
-  #meta(id: "snippet", parent_id: "home", title: [Snippet], authors: ())
+  #meta(id: "snippet", parent-id: "home", title: [Snippet], authors: ())
   #ssg.mkdoc[
     SHARED-SNIPPET-BODY
     #context {

@@ -7,8 +7,7 @@
 
 #html.page("index.html", title: "Notebook & notes")[
   #meta(id: "root", title: [Notebook & notes], authors: ("Alice",), tags: (science,), cover_image: (img.data)(png))
-  #html.mkcover()
-  #html.mkdoc[
+  #html.mkdoc(cover: true)[
     #html.lookup("child", [Read the child])
     #html.render-children([Children])
     #html.render-tags(tree)
@@ -16,11 +15,11 @@
 ]
 
 #html.page("notes/child.html", title: "Child")[
-  #meta(id: "child", parent_id: "root", title: [Child], authors: ())
+  #meta(id: "child", parent-id: "root", title: [Child], authors: ())
   #html.mkdoc[
     #html.lookup("root", [Return to root])
     #embed[
-      #meta(id: "nested", parent_id: "child", title: [Nested], authors: ())
+      #meta(id: "nested", parent-id: "child", title: [Nested], authors: ())
       #html.mkdoc(new-page: false)[Nested content.]
     ]
     #html.lookup("root", [Restored child context])

@@ -6,14 +6,13 @@
 #mkindex("standalone", [Independent target])
 #lookup("standalone", [Independent reference])
 #meta(id: "root", title: [Auto root], authors: ())
-#mkcover()
-#mkdoc[
+#mkdoc(cover: true)[
   #mkoutline()
   #lookup("child", [Forward reference])
   #render-children([Children])
   #render-tags(tree)
 ]
-#meta(id: "child", parent_id: "root", title: [Auto child], authors: (), tags: (tree.children.science.tag,))
+#meta(id: "child", parent-id: "root", title: [Auto child], authors: (), tags: (tree.children.science.tag,))
 #mkdoc(new-page: false)[Child content.]
 #context {
   assert.eq(backlinks("standalone").first().ctx.variant, "null")

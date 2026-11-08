@@ -8,8 +8,8 @@
 // Declare a document. Most arguments map 1:1 onto `_Core_doc` fields and
 #let meta(
   id: none,
-  parent_id: auto,
-  file_path: "(no link (uri))",
+  parent-id: auto,
+  file-path: "(no link (uri))",
   //
   title: none,
   authors: none,
@@ -31,8 +31,8 @@
   context {
     let doc = (_core_doc.new)(
       id: id,
-      parent_id: if parent_id == auto { id } else { parent_id },
-      file_path: file_path,
+      parent-id: if parent-id == auto { id } else { parent-id },
+      file-path: file-path,
 
       title: title,
       authors: authors,

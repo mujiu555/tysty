@@ -34,8 +34,8 @@
   if pos != none and pos > 0 {
     links.push(link(entries.find(index => index.label == ids.at(pos - 1)).loc, [Previous]))
   }
-  if doc.parent_id != doc.id and entries.any(index => index.label == doc.parent_id) {
-    links.push(link(entries.find(index => index.label == doc.parent_id).loc, [Parent]))
+  if doc.parent-id != doc.id and entries.any(index => index.label == doc.parent-id) {
+    links.push(link(entries.find(index => index.label == doc.parent-id).loc, [Parent]))
   }
   if pos != none and pos + 1 < ids.len() {
     links.push(link(entries.find(index => index.label == ids.at(pos + 1)).loc, [Next]))
@@ -50,7 +50,7 @@
 #let _breadcrumbs(doc) = context {
   let entries = indexers()
   let docs = documents()
-  let path = _breadcrumb-path(doc, docs)
+  let path = _breadcrumb-path(doc)
   let crumbs = path.map(node => {
     if entries.any(index => index.label == node.id) {
       link(entries.find(index => index.label == node.id).loc, node.title)
@@ -59,16 +59,33 @@
   html.elem("nav", attrs: (class: "tysty-breadcrumbs", aria-label: "Breadcrumb"), crumbs.join(" / "))
 }
 
+// Covers are presentation only, outside the primary-index reading sequence.
+#let mkcover() = context {
+  let doc = (current.get)()
+  _element("header", "tysty-cover", mkindex(doc.id, [
+    #if doc.cover_image.variant in ("path", "data") {
+      image(doc.cover_image.payload, alt: "Cover image")
+    }
+    #html.elem("h1", doc.title)
+    #_details(doc)
+    #if doc.abstract != "" { _element("p", "tysty-abstract", doc.abstract) }
+  ]))
+}
+
 // new-page is accepted for shared PDF/HTML source; HTML flows continuously.
-#let mkdoc(new-page: true, ssg: false, content) = context {
+#let mkdoc(new-page: true, cover: false, ssg: false, content) = context {
   let scope = here()
   let doc = (current.get)()
   [#metadata(doc.id) <tysty-rendered-document>]
   let article = _element("article", "tysty-note", [
-    #mkindex(doc.id, heading(depth: 1, [
-      #doc.title
-      #_element("span", "tysty-note-id", link((file_base.get)() + doc.file_path, "[" + doc.id + "]"))
-    ]))
+    #if cover {
+      mkcover()
+    } else {
+      mkindex(doc.id, heading(depth: 1, [
+        #doc.title
+        #_element("span", "tysty-note-id", link((file_base.get)() + doc.file-path, "[" + doc.id + "]"))
+      ]))
+    }
     #_details(doc)
     #if not ssg { _navigation(doc) }
     #if not ssg { _breadcrumbs(doc) }
@@ -91,29 +108,15 @@
   }
 }
 
-// Covers are presentation only, outside the primary-index reading sequence.
-#let mkcover() = context {
-  let doc = (current.get)()
-  _element("header", "tysty-cover", [
-    #if doc.cover_image.variant in ("path", "data") {
-      image(doc.cover_image.payload, alt: "Cover image")
-    }
-    #html.elem("h1", doc.title)
-    #_details(doc)
-    #if doc.abstract != "" { _element("p", "tysty-abstract", doc.abstract) }
-  ])
-}
-
-#let render-children(title) = context {
+#let render-children() = context {
   let doc = (current.get)()
   let entries = indexers()
   let ids = entities()
   let children = documents().filter(d => (
-    d.parent_id == doc.id and d.id != doc.id and d.id in ids and entries.any(index => index.label == d.id)
+    d.parent-id == doc.id and d.id != doc.id and d.id in ids and entries.any(index => index.label == d.id)
   ))
   if children.len() > 0 {
     _element("section", "tysty-children", [
-      #heading(level: 2, outlined: false, title)
       #list(..children.map(d => link(entries.find(index => index.label == d.id).loc, d.title)))
     ])
   }

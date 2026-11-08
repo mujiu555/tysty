@@ -8,5 +8,5 @@
 #context {
  assert.eq(rendered-text().matches(regex("Title")).len(), 1)
  assert(rendered-text().contains("Title"))
- assert.eq(indexers(), (), message: "Cover must not register a duplicate heading")
+ assert.eq(indexers().map(index => index.label), ("unit",), message: "Cover must register its document target exactly once")
 }
