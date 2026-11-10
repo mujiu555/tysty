@@ -19,6 +19,7 @@ h1, h2, h3, h4, h5, h6 { line-height: 1.25; scroll-margin-top: 1rem; }
 .tysty-site-page { --nav-height: min(8rem, 30vh); margin-block: 1rem 2rem; }
 .tysty-site-page :is(h1, h2, h3, h4, h5, h6) { scroll-margin-top: calc(var(--nav-height) + 1rem); }
 .tysty-page-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(12rem, 16rem); gap: clamp(1rem, 3vw, 3rem); align-items: start; }
+.tysty-page-layout > * { min-width: 0; }
 .tysty-page-layout .tysty-note { margin: 0; border: 0; }
 .tysty-page-outline { position: sticky; top: calc(var(--nav-height) + 1rem); max-height: calc(100vh - var(--nav-height) - 2rem); overflow: auto; padding: .75rem 1rem; border-inline-start: 1px solid light-dark(#d7dcdf, #42484d); font-size: .9rem; }
 .tysty-page-outline h2, .tysty-site-outline h2 { margin-block: 0 .75rem; font-size: 1rem; }
@@ -40,6 +41,6 @@ td, th { padding: .5rem .75rem; border: 1px solid light-dark(#d7dcdf, #42484d); 
   a { color: inherit; }
 }
 @media (max-width: 52rem) {
-  .tysty-page-layout { grid-template-columns: 1fr; }
+  .tysty-page-layout { grid-template-columns: minmax(0, 1fr); }
   .tysty-page-outline { position: static; max-height: none; border-inline-start: 0; border-top: 1px solid light-dark(#d7dcdf, #42484d); }
 }

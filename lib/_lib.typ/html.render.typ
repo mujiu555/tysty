@@ -138,6 +138,22 @@
 
 // Inline CSS makes single-file HTML portable. Bundle pages link the shared asset.
 #let template(body, title: "Notebook", lang: "en", css: stylesheet, css-href: none) = {
+  show table: it => html.div(
+    class: "tysty-table",
+    style: "overflow-x: auto; max-width: 100%;",
+    it,
+  )
+  show raw.where(block: true): it => html.div(
+    class: "tysty-code",
+    style: "overflow-x: auto; max-width: 100%;",
+    it,
+  )
+  show math.equation.where(block: true): it => html.div(
+    class: "tysty-equation",
+    style: "overflow-x: auto; max-width: 100%;",
+    it,
+  )
+
   html.elem("html", attrs: (lang: lang), [
     #html.elem("head", [
       #html.elem("meta", attrs: (charset: "utf-8"))
