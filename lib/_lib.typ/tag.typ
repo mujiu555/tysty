@@ -13,8 +13,6 @@
 #let _ns_tag = uid(namespaces.oid, "ac562613-54f4-4584-8ea4-1401df8d1ed2")
 #let _tag_uid(name) = uid(_ns_tag, name)
 
-// A tag: `_parent` is the id of its parent ("" for the root), `id`/`name`
-// identify it, `documents` is a `_state` slot accumulating attached
 // document ids.
 #let tag = record(
   _parent: str,
@@ -25,11 +23,6 @@
 
 #let tag = impl_record(
   tag,
-  // Create a child tag under this one. The child gets a fresh, empty
-  // `documents` slot so it tracks its own documents. `self._type.new` (rather
-  // than a captured `tag.new`) keeps the child wired to the *full* tag type —
-  // a closure defined before `impl` finishes would otherwise capture the
-  // bare, method-less type.
   sub: (self, name) => {
     let id = _tag_uid(self.id + ":" + name)
     (self._type.new)(
@@ -44,9 +37,6 @@
   },
 )
 
-// Recursively turn a dictionary of child names into a dictionary of nodes.
-// Each node contains its actual tag record and another `children` dictionary.
-// An empty dictionary denotes a leaf.
 #let _build-children(parent, tree) = {
   assert(type(tree) == dictionary, message: "tag children must be a dictionary")
   let children = (:)

@@ -11,8 +11,8 @@
 )
 
 #let img = enumerator(
-  path: str, // TODO: use path
-  data: bytes, // user to read the file `(img.data)(read("file", encoding: none))`
+  path: str,
+  data: bytes,
   null: record(),
 )
 #let img = img + (null: (img.null)())
@@ -59,7 +59,4 @@
   null: record(),
 )
 
-// Re-bind `category.null` from the null-variant *constructor* to a
-// ready-made null *instance*, so `category.null` can be used directly as
-// the default "no category" value (see `meta`'s default in doc.typ).
 #let category = category + (null: (category.null)())

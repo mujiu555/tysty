@@ -169,7 +169,6 @@
   list(render-node(tree))
 }
 
-// Wishful-Thinking's note layout with tag names and the new global index.
 #let template(body) = {
   set page(
     paper: "a4",

@@ -50,7 +50,7 @@
   }
   let instance = (_type: self)
 
-  // field must have a explicit type, if you need null for a field, use enum
+  // field must have a explicit type, if you need null for a field, use empty record
   for (f, ty) in self._fields {
     let v = rest.at(f, default: none)
     // Format potentially large values only on the failure path.
@@ -71,9 +71,6 @@
     instance.insert(m, fn)
   }
 
-  // `this_call(method)` closes over the fresh instance: it returns a
-  // function whose first argument is `_fetch_method(instance, ...)` —
-  // i.e. `self` arrives already carrying its own bound methods.
   let this_call(method) = {
     let fn = instance.at(method, default: auto)
     assert(fn != auto)
@@ -82,7 +79,8 @@
   instance + _fetch_method(instance, this_call, self._methods.keys())
 }
 
-// Copy-and-replace update: validate every field of `instance`, then construct
+// Copy-and-replace update:
+// validate every field of `instance`, then construct
 // a new instance overriding the given fields.
 #let _update_record(self, instance, ..rest) = {
   assert(arguments.pos(rest).len() == 0, message: "record construictor accepts named fields only")

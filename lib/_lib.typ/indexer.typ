@@ -27,8 +27,6 @@
   ctx: _ctx,
 )
 
-// An index entry: the label text, the location it points at, and the
-// content to display for the link.
 #let _indexer = record(
   label: str,
   loc: location,
@@ -43,8 +41,6 @@
   },
 )
 
-// Register a label at the current location. Duplicate labels are rejected —
-// this fails compilation instead of silently shadowing.
 #let mkindex(label, content) = {
   context {
     let loc = here()
@@ -54,14 +50,10 @@
       content: content,
     )
 
-    // The shared marker enumerates entries; the named marker supports targeted
-    // queries without collecting and filtering every index entry.
     [#metadata(index) <typst-mode-index-label>]
     [#metadata(index)#_index-selector(label)]
     content
   }
-  // Keep validation separate from registration so a failed validation cannot
-  // remove the metadata and oscillate between layout passes.
   context {
     let matches = query(_index-selector(label))
     assert(matches.len() <= 1, message: "ERROR: duplicate label: `" + label + "`")

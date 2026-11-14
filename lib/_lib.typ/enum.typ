@@ -106,10 +106,6 @@
     _type_reserved_names + _enum_built-ins.keys() + ("fields", "description", "variant", "payload"),
   )
 
-  // The "type" is itself just a dictionary: a UID identifying it, the
-  // declared field map, and a method registry seeded with the `fields`
-  // accessor. `_methods.fields` has `fn: _get_fields_record`, so every
-  // instance automatically carries a `fields` method.
   let ty = (
     _type_id: _enum_uid(repr(variants)),
     _variants: _variants,
